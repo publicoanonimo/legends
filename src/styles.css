@@ -121,8 +121,8 @@ code {
 }
 
 /* ==========================================================================
-   GLOBAL FULL-PAGE ILLUMINATION & POSTER SCENE
-   (Edge-to-Edge Across Entire Screen, Fast, Luminous & 60fps/120fps GPU Fluid)
+   GLOBAL FULL-PAGE ILLUMINATION SCENE
+   (Edge-to-Edge Across Entire Screen, Pure Atmospheric Lighting & Glow)
    ========================================================================== */
 .global-ambient-glow-scene {
   position: fixed;
@@ -132,41 +132,12 @@ code {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  background: radial-gradient(ellipse 95% 75% at 50% 12%, #220912 0%, #100508 45%, #060204 100%);
+  background: radial-gradient(ellipse 100% 80% at 50% 12%, #260913 0%, #120509 45%, #060204 100%);
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
 
-/* Layer 1: Full-Bleed Official Poster Background (Subtle & atmospheric) */
-.ambient-poster-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/paranormal-fest.jpeg');
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
-  opacity: 0.22;
-  filter: contrast(1.15) saturate(1.18);
-  transform: scale(1.08);
-  will-change: transform;
-  pointer-events: none;
-}
-
-/* Layer 2: Deep Dark Vignette & Gradient Wash (Ensures ultra-crisp readable foreground) */
-.ambient-vignette-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(10, 4, 7, 0.42) 0%, rgba(7, 3, 5, 0.82) 65%, #060204 100%),
-    linear-gradient(180deg, rgba(8, 3, 5, 0.58) 0%, rgba(6, 2, 4, 0.22) 28%, rgba(6, 2, 4, 0.78) 72%, #050204 100%);
-  pointer-events: none;
-}
-
-/* Layer 3: Radiant Crimson Orb (Fast Left-to-Right sweep across top & center) */
+/* Layer 1: Radiant Crimson Orb (Fast Left-to-Right sweep across top & center) */
 .ambient-beam.beam-crimson {
   position: absolute;
   top: -10%;
@@ -176,7 +147,7 @@ code {
   min-width: 600px;
   min-height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle at 48% 48%, rgba(255, 23, 68, 0.46) 0%, rgba(220, 11, 43, 0.24) 38%, rgba(130, 8, 26, 0.08) 60%, transparent 74%);
+  background: radial-gradient(circle at 48% 48%, rgba(255, 23, 68, 0.48) 0%, rgba(220, 11, 43, 0.25) 38%, rgba(130, 8, 26, 0.08) 60%, transparent 74%);
   will-change: transform;
   transform: translate3d(0, 0, 0);
   animation: global-sweep-crimson 5.8s ease-in-out infinite alternate;

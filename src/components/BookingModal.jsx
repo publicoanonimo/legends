@@ -110,13 +110,15 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
                     onClick={() => setSelectedStaff(staff.id)}
                     role="button"
                     tabIndex={0}
+                    aria-label={`Seleccionar a ${staff.name}, ${staff.phone}`}
                   >
-                  <div className="staff-card-top">
+                    <div className="staff-card-top">
                       <div className="staff-radio">
                         {isSelected && <span className="staff-radio-dot" />}
                       </div>
                       <div className="staff-meta">
-                        <strong className="staff-number">{staff.phone}</strong>
+                        <strong className="staff-name">{staff.name}</strong>
+                        <span className="staff-number">{staff.phone}</span>
                       </div>
                     </div>
                   </div>

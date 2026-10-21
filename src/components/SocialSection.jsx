@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { ExternalLink, Volume2, VolumeX, MessageCircle, Music2 } from 'lucide-react'
-import { playClickSound, playEerieSound } from '../utils/sound'
+import { ExternalLink, MessageCircle, Music2 } from 'lucide-react'
+import { playClickSound } from '../utils/sound'
 
 function FacebookIcon({ size = 24, className }) {
   return (
@@ -11,18 +10,6 @@ function FacebookIcon({ size = 24, className }) {
 }
 
 export default function SocialSection() {
-  const [ambientActive, setAmbientActive] = useState(false)
-
-  const toggleSound = () => {
-    playClickSound()
-    if (!ambientActive) {
-      playEerieSound()
-      setAmbientActive(true)
-    } else {
-      setAmbientActive(false)
-    }
-  }
-
   return (
     <section className="social-section-v2" aria-labelledby="social-heading">
       <div className="section-head-bar">
@@ -33,16 +20,6 @@ export default function SocialSection() {
             Entérate de las dinámicas, pistas de la Casa del Terror y sorteos de entradas en nuestras redes.
           </p>
         </div>
-
-        <button
-          className={`ambient-toggle-btn ${ambientActive ? 'active' : ''}`}
-          onClick={toggleSound}
-          title={ambientActive ? 'Desactivar efecto sonoro' : 'Activar atmósfera paranormal'}
-          aria-label={ambientActive ? 'Desactivar efecto sonoro' : 'Activar atmósfera paranormal'}
-        >
-          {ambientActive ? <Volume2 size={16} /> : <VolumeX size={16} />}
-          <span>{ambientActive ? 'Sonido Activo' : 'Efecto Paranormal'}</span>
-        </button>
       </div>
 
       <div className="social-cards-grid">

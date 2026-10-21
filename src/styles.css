@@ -194,6 +194,103 @@ code {
   }
 }
 
+@property --rgb-border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rgb-border-orbit {
+  to { --rgb-border-angle: 360deg; }
+}
+
+:is(
+  button,
+  .sidebar-bottom-panel,
+  .sidebar-event-card,
+  .event-hero-v2,
+  .countdown-widget-pro,
+  .countdown-live-active,
+  .fact-tile-btn,
+  .facts-intro-box,
+  .presale-feature-card,
+  .presale-art-frame,
+  .presale-staff-strip,
+  .staff-strip-chip,
+  .package-card-v2,
+  .package-price-box,
+  .poster-inner-frame,
+  .tables-info-banner,
+  .social-hub-card,
+  .booking-modal-card,
+  .date-modal-card,
+  .costume-modal-card,
+  .costume-idea-card,
+  .lightbox-container,
+  .lightbox-toolbar,
+  .toast-card,
+  .mobile-floating-bar,
+  .summary-card,
+  .staff-card
+) {
+  position: relative;
+  isolation: isolate;
+}
+
+:is(
+  button,
+  .sidebar-bottom-panel,
+  .sidebar-event-card,
+  .event-hero-v2,
+  .countdown-widget-pro,
+  .countdown-live-active,
+  .fact-tile-btn,
+  .facts-intro-box,
+  .presale-feature-card,
+  .presale-art-frame,
+  .presale-staff-strip,
+  .staff-strip-chip,
+  .package-card-v2,
+  .package-price-box,
+  .poster-inner-frame,
+  .tables-info-banner,
+  .social-hub-card,
+  .booking-modal-card,
+  .date-modal-card,
+  .costume-modal-card,
+  .costume-idea-card,
+  .lightbox-container,
+  .lightbox-toolbar,
+  .toast-card,
+  .mobile-floating-bar,
+  .summary-card,
+  .staff-card
+)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.82;
+  background: conic-gradient(
+    from var(--rgb-border-angle),
+    #ff1744,
+    #ff9f1c,
+    #f7ff00,
+    #00f5a0,
+    #00d9ff,
+    #7b2cff,
+    #ff2bd6,
+    #ff1744
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rgb-border-orbit 5s linear infinite;
+}
+
 /* Keep the enlarged countdown readable on narrow screens. */
 @media (max-width: 640px) {
   .countdown-widget-pro {

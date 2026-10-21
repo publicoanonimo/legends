@@ -186,8 +186,9 @@ export default function App() {
         {/* Topbar Header */}
         <header className="topbar-v2">
           {!isAdmin ? (
-            <div className="visitor-header-actions">
-              <span className="visitor-welcome">Bienvenido</span>
+            <>
+              <span className="visitor-brand">THE LEGENDS</span>
+              <div className="visitor-header-actions">
               <button
                 className="organizer-login-btn"
                 onClick={() => setLoginOpen(true)}
@@ -196,7 +197,8 @@ export default function App() {
               >
                 <UserRound size={17} />
               </button>
-            </div>
+              </div>
+            </>
           ) : (
             <>
           <div className="topbar-left">

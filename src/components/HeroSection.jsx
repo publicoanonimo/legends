@@ -12,11 +12,6 @@ export default function HeroSection({ onOpenLightbox }) {
       <div className="hero-grid">
         {/* Left: Copy & CTAs */}
         <div className="hero-copy-column">
-          <div className="hero-badge-pill">
-            <span className="pulsing-red-dot" />
-            <span>THE LEGENDS PRESENTA · EDICIÓN HALLOWEEN</span>
-          </div>
-
           <h1 className="hero-main-title">
             PARANORMAL
             <span className="title-accent-glow"> FEST</span>

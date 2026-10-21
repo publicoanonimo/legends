@@ -14,6 +14,7 @@ function Icon({ name, size = 19 }) {
     cash: <><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 5V3h10v2m-8 9h.01M15 14h.01"/></>,
     box: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8m-9 5v9"/></>,
     arrow: <><path d="M7 17 17 7M7 7h10v10"/></>,
+    menu: <><path d="M4 6h16M4 12h16M4 18h16"/></>,
   }
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>
 }
@@ -21,6 +22,7 @@ function Icon({ name, size = 19 }) {
 export default function App() {
   const [active, setActive] = useState('inicio')
   const [eventOverlay, setEventOverlay] = useState('')
+  const [menuOpen, setMenuOpen] = useState(() => !window.matchMedia('(max-width: 700px)').matches)
   const activeModule = modules.find((module) => module.id === active)
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
+      <aside className={`sidebar ${menuOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <button className="brand" onClick={() => setActive('inicio')} aria-label="Ir a Inicio">
           <span className="brand-mark">L</span>
           <span className="brand-copy"><strong>THE LEGENDS</strong><small>ESPACIO OFICIAL</small></span>
@@ -43,7 +45,7 @@ export default function App() {
         <div className="nav-label">MENÚ PRINCIPAL</div>
         <nav className="main-nav" aria-label="Navegación principal">
           {modules.map((module) => (
-            <button key={module.id} className={`nav-item ${active === module.id ? 'selected' : ''}`} onClick={() => setActive(module.id)}>
+              <button key={module.id} className={`nav-item ${active === module.id ? 'selected' : ''}`} onClick={() => { setActive(module.id); if (window.matchMedia('(max-width: 700px)').matches) setMenuOpen(false) }}>
               <Icon name={module.icon}/><span>{module.label}</span>
             </button>
           ))}
@@ -55,9 +57,10 @@ export default function App() {
         </div>
       </aside>
 
-      <main className="main-area">
+      {menuOpen && <button className="menu-backdrop" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)}/>}
+      <main className={`main-area ${menuOpen ? '' : 'menu-closed'}`}>
         <header className="topbar">
-          <div className="breadcrumbs"><span>THE LEGENDS</span><span className="crumb-separator">/</span><strong>{activeModule.label}</strong></div>
+          <div className="topbar-leading"><button className="menu-toggle" aria-label={menuOpen ? 'Ocultar módulos' : 'Mostrar módulos'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><Icon name="menu" size={20}/></button><div className="breadcrumbs"><span>THE LEGENDS</span><span className="crumb-separator">/</span><strong>{activeModule.label}</strong></div></div>
           <div className="topbar-mark">L</div>
         </header>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
-  Home, Menu, X, Ticket, Calendar, ChevronRight
+  Home, LayoutDashboard, Banknote, Package, Menu, X, Ticket, Calendar,
+  ChevronRight, LogIn, LogOut
 } from 'lucide-react'
 
 // Components
@@ -16,18 +17,27 @@ import LightboxModal from './components/LightboxModal'
 import CostumeModal from './components/CostumeModal'
 import DateModal from './components/DateModal'
 import Toast from './components/Toast'
+import LoginModal from './components/LoginModal'
+import DashboardModule from './components/modules/DashboardModule'
+import CajaModule from './components/modules/CajaModule'
+import InventarioModule from './components/modules/InventarioModule'
 
 // Sound utility
 import { playClickSound } from './utils/sound'
 
 const modules = [
   { id: 'inicio', label: 'Inicio', icon: Home, desc: 'Evento & Preventa' },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Métricas & Aforo' },
+  { id: 'caja', label: 'Caja POS', icon: Banknote, desc: 'Cobro de Puerta' },
+  { id: 'inventario', label: 'Inventario', icon: Package, desc: 'Stock & Barra' },
 ]
 
 export default function App() {
   const [active, setActive] = useState('inicio')
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
   // Default to open on desktop (>=1024px) and closed on mobile (<1024px)
-  const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : false))
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Modals state
   const [bookingPackage, setBookingPackage] = useState(null)
@@ -36,18 +46,14 @@ export default function App() {
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [toast, setToast] = useState(null)
 
-  // Listen for window resize to handle sidebar gracefully between mobile and desktop
+  // Keep the administrator sidebar in sync with the viewport.
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setSidebarOpen(false)
-      } else {
-        setSidebarOpen(true)
-      }
+      setSidebarOpen(isAdmin && window.innerWidth >= 1024)
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [isAdmin])
 
   const showToast = (toastData) => {
     setToast(toastData)
@@ -62,6 +68,22 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const handleLogin = (username, password) => {
+    if (username !== 'admin' || password !== 'admin') return false
+    setIsAdmin(true)
+    setActive('dashboard')
+    setSidebarOpen(window.innerWidth >= 1024)
+    setLoginOpen(false)
+    return true
+  }
+
+  const handleLogout = () => {
+    setIsAdmin(false)
+    setActive('inicio')
+    setSidebarOpen(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const activeModule = modules.find((m) => m.id === active) || modules[0]
 
   return (
@@ -70,7 +92,7 @@ export default function App() {
       <Toast toast={toast} onClose={() => setToast(null)} />
 
       {/* Mobile Drawer Backdrop */}
-      {sidebarOpen && (
+      {isAdmin && sidebarOpen && (
         <div
           className="sidebar-backdrop"
           onClick={() => setSidebarOpen(false)}
@@ -79,7 +101,7 @@ export default function App() {
       )}
 
       {/* Modern Sidebar */}
-      <aside className={`sidebar-v2 ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+      {isAdmin && <aside className={`sidebar-v2 ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar-top">
           <button
             className="brand-v2"
@@ -157,12 +179,19 @@ export default function App() {
             <span>Sistema Operativo · 2026</span>
           </div>
         </div>
-      </aside>
+      </aside>}
 
       {/* Main Content Area */}
-      <div className={`main-area-v2 ${sidebarOpen ? 'has-sidebar' : 'collapsed-sidebar'}`}>
+      <div className={`main-area-v2 ${sidebarOpen ? 'has-sidebar' : 'collapsed-sidebar'} ${!isAdmin ? 'visitor-mode' : ''}`}>
         {/* Topbar Header */}
         <header className="topbar-v2">
+          {!isAdmin ? (
+            <button className="organizer-login-btn" onClick={() => setLoginOpen(true)}>
+              <LogIn size={17} />
+              <span>Organizador</span>
+            </button>
+          ) : (
+            <>
           <div className="topbar-left">
             <button
               className="topbar-menu-toggle"
@@ -188,8 +217,13 @@ export default function App() {
               <Calendar size={13} className="text-crimson" />
               <span>30 OCT · SAN PEDRO</span>
             </div>
-
+            <button className="admin-logout-btn" onClick={handleLogout}>
+              <LogOut size={15} />
+              <span>Salir</span>
+            </button>
           </div>
+            </>
+          )}
         </header>
 
         {/* Content View Router */}
@@ -221,6 +255,12 @@ export default function App() {
             </div>
           )}
 
+          {isAdmin && active === 'dashboard' && (
+            <DashboardModule onNavigate={handleNavClick} onToast={showToast} />
+          )}
+          {isAdmin && active === 'caja' && <CajaModule onToast={showToast} />}
+          {isAdmin && active === 'inventario' && <InventarioModule onToast={showToast} />}
+
         </main>
       </div>
 
@@ -245,6 +285,9 @@ export default function App() {
       )}
 
       {/* Modals */}
+      {loginOpen && (
+        <LoginModal onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
+      )}
       {bookingPackage && (
         <BookingModal
           initialPackageId={bookingPackage}

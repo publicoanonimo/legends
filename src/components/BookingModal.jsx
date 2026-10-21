@@ -175,7 +175,7 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
         <div className="modal-footer">
           <button
             type="button"
-            className="submit-booking-btn"
+            className="submit-booking-btn staff-chat-submit-btn"
             onClick={() => handleDirectChat(activeStaff)}
           >
             <MessageSquare size={18} />

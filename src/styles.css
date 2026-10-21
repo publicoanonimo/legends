@@ -204,58 +204,12 @@ code {
   to { --rgb-border-angle: 360deg; }
 }
 
-:is(
-  button,
-  .sidebar-bottom-panel,
-  .sidebar-event-card,
-  .event-hero-v2,
-  .countdown-widget-pro,
-  .countdown-live-active,
-  .fact-tile-btn,
-  .presale-feature-card,
-  .presale-art-frame,
-  .package-card-v2,
-  .poster-inner-frame,
-  .tables-info-banner,
-  .social-hub-card,
-  .booking-modal-card,
-  .date-modal-card,
-  .costume-modal-card,
-  .costume-idea-card,
-  .lightbox-container,
-  .lightbox-toolbar,
-  .toast-card,
-  .mobile-floating-bar,
-  .staff-card
-) {
+:is(.staff-strip-chip, .staff-chat-submit-btn) {
   position: relative;
   isolation: isolate;
 }
 
-:is(
-  button,
-  .sidebar-bottom-panel,
-  .sidebar-event-card,
-  .event-hero-v2,
-  .countdown-widget-pro,
-  .countdown-live-active,
-  .fact-tile-btn,
-  .presale-feature-card,
-  .presale-art-frame,
-  .package-card-v2,
-  .poster-inner-frame,
-  .tables-info-banner,
-  .social-hub-card,
-  .booking-modal-card,
-  .date-modal-card,
-  .costume-modal-card,
-  .costume-idea-card,
-  .lightbox-container,
-  .lightbox-toolbar,
-  .toast-card,
-  .mobile-floating-bar,
-  .staff-card
-)::after {
+:is(.staff-strip-chip, .staff-chat-submit-btn)::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -738,6 +692,49 @@ code {
   position: sticky;
   top: 0;
   z-index: 40;
+}
+
+.main-area-v2.visitor-mode {
+  margin-left: 0;
+  width: 100%;
+}
+
+.organizer-login-btn,
+.admin-logout-btn {
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff1744, #b9082c);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 20px rgba(255, 23, 68, 0.28);
+}
+
+.topbar-v2 .organizer-login-btn {
+  margin-left: auto;
+}
+
+.organizer-login-btn:hover,
+.admin-logout-btn:hover {
+  filter: brightness(1.12);
+}
+
+.login-modal-card {
+  max-width: 460px;
+}
+
+.login-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 23, 68, 0.12);
+  color: #ff9aaa;
+  font-size: 13px;
 }
 
 .topbar-left {

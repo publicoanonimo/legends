@@ -9,11 +9,6 @@ export default function PresaleSection({ onOpenBooking, onOpenLightbox }) {
           <span className="section-kicker">✦ CUPOS LIMITADOS</span>
           <h2 className="section-title">Preventa Oficial</h2>
         </div>
-        <div className="price-tag-burst">
-          <span className="burst-amount">10</span>
-          <span className="burst-currency">Bs</span>
-          <span className="burst-label">PREVENTA</span>
-        </div>
       </div>
 
       <div className="presale-feature-card">

@@ -116,12 +116,12 @@ code {
   min-height: 100vh;
   display: flex;
   position: relative;
-  background-color: var(--bg-abyss);
+  background-color: transparent;
   overflow-x: hidden;
 }
 
 /* ==========================================================================
-   GLOBAL FULL-PAGE ILLUMINATION SCENE
+   GLOBAL FULL-PAGE ILLUMINATION & POSTER SCENE
    (Edge-to-Edge Across Entire Screen, Fast, Luminous & 60fps/120fps GPU Fluid)
    ========================================================================== */
 .global-ambient-glow-scene {
@@ -132,74 +132,100 @@ code {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  contain: strict;
-  perspective: 900px;
-  transform-style: preserve-3d;
+  background: radial-gradient(ellipse 95% 75% at 50% 12%, #220912 0%, #100508 45%, #060204 100%);
   will-change: transform, opacity;
   backface-visibility: hidden;
-  transition: transform 0.12s ease-out, opacity 0.12s ease-out;
 }
 
-/* Layer 1: Radiant Crimson Orb (Fast Left-to-Right sweep across top & center) */
+/* Layer 1: Full-Bleed Official Poster Background (Subtle & atmospheric) */
+.ambient-poster-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/paranormal-fest.jpeg');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.22;
+  filter: contrast(1.15) saturate(1.18);
+  transform: scale(1.08);
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Layer 2: Deep Dark Vignette & Gradient Wash (Ensures ultra-crisp readable foreground) */
+.ambient-vignette-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(10, 4, 7, 0.42) 0%, rgba(7, 3, 5, 0.82) 65%, #060204 100%),
+    linear-gradient(180deg, rgba(8, 3, 5, 0.58) 0%, rgba(6, 2, 4, 0.22) 28%, rgba(6, 2, 4, 0.78) 72%, #050204 100%);
+  pointer-events: none;
+}
+
+/* Layer 3: Radiant Crimson Orb (Fast Left-to-Right sweep across top & center) */
 .ambient-beam.beam-crimson {
   position: absolute;
-  top: -15%;
-  left: -15%;
-  width: 75vw;
-  height: 75vw;
-  min-width: 550px;
-  min-height: 550px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 45% 45%, rgba(255, 23, 68, 0.44) 0%, rgba(220, 11, 43, 0.22) 36%, rgba(130, 8, 26, 0.06) 58%, transparent 74%);
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  animation: global-sweep-crimson 5.2s ease-in-out infinite alternate;
-}
-
-/* Layer 2: Radiant Spectral Violet Orb (Fast horizontal sweep across middle & right) */
-.ambient-beam.beam-violet {
-  position: absolute;
-  top: 25%;
-  right: -15%;
-  width: 75vw;
-  height: 75vw;
-  min-width: 550px;
-  min-height: 550px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(168, 45, 255, 0.40) 0%, rgba(120, 25, 220, 0.18) 36%, rgba(60, 10, 120, 0.05) 58%, transparent 74%);
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  animation: global-sweep-violet 5.8s ease-in-out infinite alternate;
-}
-
-/* Layer 3: Vibrant Bottom Crimson/Violet Orb (illuminates tables & footer across the bottom) */
-.ambient-beam.beam-bottom {
-  position: absolute;
-  bottom: -20%;
-  left: 10%;
+  top: -10%;
+  left: -10%;
   width: 80vw;
-  height: 75vw;
+  height: 80vw;
   min-width: 600px;
   min-height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 30, 80, 0.36) 0%, rgba(139, 43, 255, 0.18) 38%, transparent 72%);
+  background: radial-gradient(circle at 48% 48%, rgba(255, 23, 68, 0.46) 0%, rgba(220, 11, 43, 0.24) 38%, rgba(130, 8, 26, 0.08) 60%, transparent 74%);
   will-change: transform;
   transform: translate3d(0, 0, 0);
-  animation: global-sweep-bottom 6.2s ease-in-out infinite alternate;
+  animation: global-sweep-crimson 5.8s ease-in-out infinite alternate;
 }
 
-/* Layer 4: Fast Luminous Aurora Wave gliding across whole screen */
+/* Layer 4: Radiant Spectral Violet Orb (Fast horizontal sweep across middle & right) */
+.ambient-beam.beam-violet {
+  position: absolute;
+  top: 25%;
+  right: -10%;
+  width: 80vw;
+  height: 80vw;
+  min-width: 600px;
+  min-height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(168, 45, 255, 0.42) 0%, rgba(120, 25, 220, 0.2) 38%, rgba(60, 10, 120, 0.06) 60%, transparent 74%);
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  animation: global-sweep-violet 6.4s ease-in-out infinite alternate;
+}
+
+/* Layer 5: Vibrant Bottom Crimson/Violet Orb (illuminates tables & footer across the bottom) */
+.ambient-beam.beam-bottom {
+  position: absolute;
+  bottom: -15%;
+  left: 10%;
+  width: 85vw;
+  height: 80vw;
+  min-width: 650px;
+  min-height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 30, 80, 0.38) 0%, rgba(139, 43, 255, 0.2) 40%, transparent 72%);
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  animation: global-sweep-bottom 6.8s ease-in-out infinite alternate;
+}
+
+/* Layer 6: Fast Luminous Aurora Wave gliding across whole screen */
 .ambient-beam.beam-aurora {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
-  width: 60vw;
+  width: 70vw;
   height: 100vh;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 23, 68, 0.24) 28%, rgba(168, 45, 255, 0.20) 58%, rgba(0, 217, 255, 0.12) 80%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 23, 68, 0.22) 28%, rgba(168, 45, 255, 0.2) 58%, rgba(0, 217, 255, 0.12) 80%, transparent 100%);
   will-change: transform, opacity;
   transform: translate3d(0, 0, 0);
-  animation: global-aurora-sweep 4.6s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
+  animation: global-aurora-sweep 5.2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
 }
 
 /* Fast, 60fps GPU compositor keyframes (only translate3d) */
@@ -708,8 +734,10 @@ code {
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(135deg, #14080c 0%, #290a12 50%, #4a0c1a 100%);
-  border: 1px solid rgba(255, 23, 68, 0.35);
+  background: linear-gradient(135deg, rgba(32, 10, 18, 0.72) 0%, rgba(18, 7, 12, 0.6) 50%, rgba(48, 12, 22, 0.75) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 23, 68, 0.32);
   box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 23, 68, 0.15), var(--rim-crimson);
   padding: 48px 48px;
   margin-bottom: 40px;
@@ -4342,12 +4370,10 @@ code {
     padding: 0 14px;
   }
 
-  /* Mobile 3D Z-Depth Scroll for Full-Page Ambient Illumination */
+  /* Mobile Full-Page Ambient & Poster Background stays edge-to-edge full bleed */
   .global-ambient-glow-scene {
-    perspective: 750px;
-    transform: translate3d(0, var(--bg-scroll-y, 0px), var(--bg-scroll-z, 0px)) scale(var(--bg-scroll-scale, 1));
-    opacity: var(--bg-scroll-opacity, 1);
-    filter: blur(var(--bg-scroll-blur, 0px));
+    width: 100vw;
+    height: 100vh;
   }
 
   /* Mobile 3D Z-Depth Scroll for Hero Illumination */

@@ -50,26 +50,18 @@ export default function App() {
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [toast, setToast] = useState(null)
 
-  // Full-page dynamic scroll: direct DOM manipulation on mobile (ZERO React re-renders, 60fps/120fps)
+  // Full-page subtle parallax on the poster layer (smooth 60fps/120fps GPU fluid)
   useEffect(() => {
     let ticking = false
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const bgEl = document.getElementById('global-ambient-bg')
-          if (bgEl && window.innerWidth <= 768) {
+          const posterLayer = document.querySelector('.ambient-poster-layer')
+          if (posterLayer) {
             const scrollY = window.scrollY || window.pageYOffset || 0
-            const maxScroll = 600
-            const progress = Math.min(1, scrollY / maxScroll)
-
-            // As mobile user scrolls down, ambient illumination recedes deeper in Z
-            const z = -progress * 260
-            const scale = 1 - progress * 0.22
-            const opacity = 1 - progress * 0.35
-            const y = progress * 60
-
-            bgEl.style.transform = `translate3d(0, ${y}px, ${z}px) scale(${scale})`
-            bgEl.style.opacity = `${opacity}`
+            // Subtle slow vertical parallax drift, never shrinks or exposes borders
+            const driftY = Math.min(scrollY * 0.12, 80)
+            posterLayer.style.transform = `translate3d(0, ${driftY}px, 0) scale(1.08)`
           }
           ticking = false
         })
@@ -111,8 +103,13 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {/* Full-Page Paranormal Ambient Lighting Scene (Sweeps L -> R across entire background, fast, luminous & GPU accelerated) */}
+      {/* Full-Page Paranormal Ambient Lighting & Poster Scene (Covers entire screen & scroll) */}
       <div id="global-ambient-bg" className="global-ambient-glow-scene" aria-hidden="true">
+        {/* Full-bleed official poster background layer */}
+        <div className="ambient-poster-layer" />
+        {/* Dark atmospheric vignette and gradient wash */}
+        <div className="ambient-vignette-layer" />
+        {/* Dynamic paranormal ambient light sweeps */}
         <div className="ambient-beam beam-crimson" />
         <div className="ambient-beam beam-violet" />
         <div className="ambient-beam beam-bottom" />

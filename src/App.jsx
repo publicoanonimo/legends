@@ -66,7 +66,10 @@ export default function App() {
   }
 
   const handleLogin = (username, password) => {
-    if (username !== 'admin' || password !== 'admin') return false
+    const validCredentials =
+      (username === 'admin' && password === 'admin') ||
+      (username === 'carlos' && password === '60109945')
+    if (!validCredentials) return false
     setIsAdmin(true)
     setActive('dashboard')
     setSidebarOpen(window.innerWidth >= 1024)
@@ -149,33 +152,6 @@ export default function App() {
           </nav>
         </div>
 
-        {/* Sidebar Event Widget */}
-        <div className="sidebar-bottom-panel">
-          <div className="sidebar-event-card">
-            <div className="sidebar-card-kicker">
-              <span className="pulsing-red-dot" />
-              <span>30 DE OCTUBRE</span>
-            </div>
-            <strong>San Pedro, Bolivia</strong>
-            <p>Fiesta & Casa del Terror inmersiva. Preventa habilitada.</p>
-            <button
-              className="sidebar-booking-btn"
-              onClick={() => {
-                playClickSound()
-                setBookingPackage('preventa')
-                if (window.innerWidth < 1024) setSidebarOpen(false)
-              }}
-            >
-              <Ticket size={14} />
-              <span>Reservar Preventa (10 Bs)</span>
-            </button>
-          </div>
-
-          <div className="sidebar-status-footer">
-            <span className="status-live-dot" />
-            <span>Sistema Operativo · 2026</span>
-          </div>
-        </div>
       </aside>}
 
       {/* Main Content Area */}

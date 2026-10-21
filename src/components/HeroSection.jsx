@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Eye } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import Countdown from './Countdown'
 import { playClickSound } from '../utils/sound'
 
@@ -32,18 +32,6 @@ export default function HeroSection({ onOpenLightbox }) {
             <Countdown />
           </div>
 
-          {/* Hero key notes */}
-          <div className="hero-perks-row">
-            <div className="hero-perk">
-              <Calendar size={15} className="text-crimson" />
-              <span>Jueves 30 de Octubre</span>
-            </div>
-            <div className="hero-perk-sep">·</div>
-            <div className="hero-perk">
-              <MapPin size={15} className="text-crimson" />
-              <span>San Pedro, Bolivia</span>
-            </div>
-          </div>
         </div>
 
         {/* Right: Interactive Poster Card with 3D Tilt */}

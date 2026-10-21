@@ -11,14 +11,19 @@ export default function Countdown() {
   })
 
   useEffect(() => {
-    // Target: October 30 at 21:00:00 local time
+    // The event starts at 17:00 on the last Friday of October.
     const now = new Date()
     let currentYear = now.getFullYear()
-    let target = new Date(currentYear, 9, 30, 21, 0, 0) // Month index 9 = October
+    const getEventDate = (year) => {
+      const lastDay = new Date(year, 10, 0)
+      const daysAfterFriday = (lastDay.getDay() - 5 + 7) % 7
+      return new Date(year, 9, lastDay.getDate() - daysAfterFriday, 17, 0, 0)
+    }
+    let target = getEventDate(currentYear)
 
     // If past, target next year
     if (now.getTime() > target.getTime()) {
-      target = new Date(currentYear + 1, 9, 30, 21, 0, 0)
+      target = getEventDate(currentYear + 1)
     }
 
     const updateCountdown = () => {

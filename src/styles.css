@@ -150,6 +150,59 @@ code {
   }
 }
 
+@media (max-width: 640px) {
+  .countdown-widget-pro {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 12px;
+  }
+
+  .countdown-cards-row {
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .countdown-flip-card {
+    width: clamp(54px, 17vw, 76px);
+    height: 72px;
+  }
+
+  .flip-card-number {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+
+  .flip-card-dots {
+    display: none;
+  }
+}
+
+/* Keep the enlarged countdown readable on narrow screens. */
+@media (max-width: 640px) {
+  .countdown-widget-pro {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 12px;
+  }
+
+  .countdown-cards-row {
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .countdown-flip-card {
+    width: clamp(54px, 17vw, 76px);
+    height: 72px;
+  }
+
+  .flip-card-number {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+
+  .flip-card-dots {
+    display: none;
+  }
+}
+
 /* Layer 1: Radiant Crimson Orb (Fast Left-to-Right sweep across top & center) */
 .ambient-beam.beam-crimson {
   position: absolute;
@@ -923,22 +976,17 @@ code {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 23, 68, 0.45);
   border-radius: 16px;
-  padding: 16px 22px;
+  padding: 22px 30px;
   width: fit-content;
+  min-width: min(100%, 460px);
   max-width: 100%;
   box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.75), 0 0 24px rgba(255, 23, 68, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  cursor: pointer;
-  transition: transform var(--duration-fast), box-shadow var(--duration-fast), border-color var(--duration-fast);
+  transition: box-shadow var(--duration-fast), border-color var(--duration-fast);
 }
 
 .countdown-widget-pro:hover {
-  transform: translateY(-2px);
   border-color: rgba(255, 23, 68, 0.75);
   box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.85), 0 0 32px rgba(255, 23, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.countdown-widget-pro:active {
-  transform: scale(0.98);
 }
 
 .countdown-top-bar {
@@ -946,8 +994,8 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -967,7 +1015,7 @@ code {
 }
 
 .countdown-tag-text {
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.12em;
   color: #ff6b8b;
@@ -998,8 +1046,8 @@ code {
 
 .countdown-flip-card {
   position: relative;
-  width: 82px;
-  height: 74px;
+  width: 96px;
+  height: 88px;
   border-radius: 12px;
   background: linear-gradient(180deg, #260e18 0%, #16080e 50%, #100508 100%);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -1030,7 +1078,7 @@ code {
 
 .flip-card-number {
   font-family: var(--font-display);
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
@@ -1043,7 +1091,7 @@ code {
 }
 
 .flip-card-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.9);
@@ -1067,6 +1115,26 @@ code {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 11.5px;
   color: rgba(255, 255, 255, 0.88);
+}
+
+@media (max-width: 640px) {
+  .countdown-widget-pro {
+    min-width: 0;
+    padding: 18px 16px;
+  }
+
+  .countdown-cards-row {
+    gap: 10px;
+  }
+
+  .countdown-flip-card {
+    width: clamp(68px, 19vw, 84px);
+    height: 76px;
+  }
+
+  .flip-card-number {
+    font-size: 36px;
+  }
 }
 
 .countdown-status-line {
@@ -4746,5 +4814,31 @@ code {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .countdown-widget-pro {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 12px;
+  }
+
+  .countdown-cards-row {
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .countdown-flip-card {
+    width: clamp(54px, 17vw, 76px);
+    height: 72px;
+  }
+
+  .flip-card-number {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+
+  .flip-card-dots {
+    display: none;
   }
 }

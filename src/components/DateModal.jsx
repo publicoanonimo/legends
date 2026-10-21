@@ -16,10 +16,10 @@ export default function DateModal({ onClose }) {
   }, [onClose])
 
   const schedule = [
-    { time: '21:00', title: 'Apertura de Puertas & Registro', desc: 'Validación de manillas de preventa y asignación de mesas VIP.' },
-    { time: '22:00', title: 'Apertura de la Casa del Terror', desc: 'Recorrido inmersivo con actores, efectos y sustos en vivo.' },
-    { time: '23:30', title: 'Concurso de Disfraces', desc: 'Premiación al mejor disfraz individual y grupal con sorpresas en barra.' },
-    { time: '00:30', title: 'Hora Paranormal & Set Estelar', desc: 'DJ Set The Legends con la mejor música hasta el amanecer.' },
+    { time: '17:00', title: 'Apertura de Puertas & Registro', desc: 'Validación de manillas de preventa y asignación de mesas VIP.' },
+    { time: '18:00', title: 'Apertura de la Casa del Terror', desc: 'Recorrido inmersivo con actores, efectos y sustos en vivo.' },
+    { time: '19:30', title: 'Concurso de Disfraces', desc: 'Premiación al mejor disfraz individual y grupal con sorpresas en barra.' },
+    { time: '20:30', title: 'Hora Paranormal & Set Estelar', desc: 'DJ Set The Legends con la mejor música hasta el amanecer.' },
   ]
 
   return (
@@ -39,12 +39,12 @@ export default function DateModal({ onClose }) {
           <div className="date-big-block">
             <span className="date-month-txt">OCTUBRE</span>
             <strong className="date-day-num">30</strong>
-            <span className="date-weekday-txt">JUEVES</span>
+            <span className="date-weekday-txt">VIERNES</span>
           </div>
           <div className="date-meta-info">
             <div className="date-info-item">
               <Clock size={16} className="text-crimson" />
-              <span>Desde las 21:00 hasta el cierre</span>
+              <span>Desde las 17:00 hasta el cierre</span>
             </div>
             <div className="date-info-item">
               <MapPin size={16} className="text-crimson" />

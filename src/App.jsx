@@ -10,6 +10,7 @@ import PresaleSection from './components/PresaleSection'
 import TablesSection from './components/TablesSection'
 import SocialSection from './components/SocialSection'
 import StaffSection from './components/StaffSection'
+import FooterSection from './components/FooterSection'
 import BookingModal from './components/BookingModal'
 import LightboxModal from './components/LightboxModal'
 import CostumeModal from './components/CostumeModal'
@@ -216,6 +217,7 @@ export default function App() {
 
               <SocialSection />
               <StaffSection />
+              <FooterSection />
             </div>
           )}
 

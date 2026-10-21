@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Home, LayoutDashboard, Banknote, Package, Menu, X, Sparkles,
-  Ticket, Flame, Calendar, MapPin, ChevronRight, Music
+  Home, Menu, X, Ticket, Calendar, ChevronRight
 } from 'lucide-react'
 
 // Components
@@ -16,19 +15,11 @@ import CostumeModal from './components/CostumeModal'
 import DateModal from './components/DateModal'
 import Toast from './components/Toast'
 
-// Management Modules
-import DashboardModule from './components/modules/DashboardModule'
-import CajaModule from './components/modules/CajaModule'
-import InventarioModule from './components/modules/InventarioModule'
-
 // Sound utility
 import { playClickSound } from './utils/sound'
 
 const modules = [
   { id: 'inicio', label: 'Inicio', icon: Home, desc: 'Evento & Preventa' },
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Métricas & Aforo' },
-  { id: 'caja', label: 'Caja POS', icon: Banknote, desc: 'Cobro de Puerta' },
-  { id: 'inventario', label: 'Inventario', icon: Package, desc: 'Stock & Barra' },
 ]
 
 export default function App() {
@@ -73,13 +64,6 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {/* Full-Page Paranormal Ambient Lighting Scene (Sweeps L -> R across entire background, fast, luminous & GPU fluid) */}
-      <div id="global-ambient-bg" className="global-ambient-glow-scene" aria-hidden="true">
-        <div className="ambient-beam beam-crimson" />
-        <div className="ambient-beam beam-violet" />
-        <div className="ambient-beam beam-bottom" />
-        <div className="ambient-beam beam-aurora" />
-      </div>
       {/* Toast Notification Container */}
       <Toast toast={toast} onClose={() => setToast(null)} />
 
@@ -203,15 +187,6 @@ export default function App() {
               <span>30 OCT · SAN PEDRO</span>
             </div>
 
-            {active !== 'inicio' && (
-              <button
-                className="topbar-return-btn"
-                onClick={() => handleNavClick('inicio')}
-              >
-                <Home size={15} />
-                <span>Volver a la Web</span>
-              </button>
-            )}
           </div>
         </header>
 
@@ -245,24 +220,6 @@ export default function App() {
             </div>
           )}
 
-          {active === 'dashboard' && (
-            <DashboardModule
-              onNavigate={(dest) => handleNavClick(dest)}
-              onToast={showToast}
-            />
-          )}
-
-          {active === 'caja' && (
-            <CajaModule
-              onToast={showToast}
-            />
-          )}
-
-          {active === 'inventario' && (
-            <InventarioModule
-              onToast={showToast}
-            />
-          )}
         </main>
       </div>
 

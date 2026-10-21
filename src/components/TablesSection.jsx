@@ -143,7 +143,7 @@ export default function TablesSection({ onOpenBooking, onOpenLightbox }) {
               tabIndex={0}
               aria-label={`Ver afiche oficial de ${pkg.name}`}
             >
-              <img src={pkg.image} alt={pkg.name} className="package-thumb-img" />
+              <img src={pkg.image} alt={pkg.name} className="package-thumb-img" loading="lazy" />
               <div className="poster-zoom-hint">
                 <Eye size={16} />
                 <span>VER AFICHE</span>

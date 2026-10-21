@@ -35,6 +35,7 @@ export default function PresaleSection({ onOpenBooking, onOpenLightbox }) {
           aria-label="Ver afiche de preventa con zoom"
         >
           <img
+            loading="lazy"
             src="/paranormal-preventa.jpeg"
             alt="Afiche preventa Paranormal Fest 10 Bs"
             className="presale-art-img"

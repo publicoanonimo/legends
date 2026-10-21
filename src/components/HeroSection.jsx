@@ -1,32 +1,10 @@
-import { useState, useEffect } from 'react'
 import { Sparkles, Calendar, MapPin, Ticket, Flame, Eye } from 'lucide-react'
 import Countdown from './Countdown'
 import { playClickSound } from '../utils/sound'
 
 export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostume, onOpenDateModal }) {
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -14
-    setTilt({ x, y })
-  }
-
-  const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 })
-  }
-
   return (
     <section className="event-hero-v2">
-      {/* Dynamic GPU lighting: sweeps L -> R fast, fluid, zero CPU lag */}
-      <div className="hero-glow-scene" aria-hidden="true">
-        <div className="hero-light-sweep sweep-crimson" />
-        <div className="hero-light-sweep sweep-violet" />
-        <div className="hero-light-sweep sweep-beam" />
-        <div className="hero-light-pulse" />
-      </div>
-
       <div className="hero-diagonal-ribbon">
         <span>THE LEGENDS ✦ HALLOWEEN ✦ PARANORMAL FEST ✦ SAN PEDRO ✦ 30 DE OCTUBRE</span>
       </div>
@@ -103,11 +81,6 @@ export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostu
         <div className="hero-poster-column">
           <div
             className="hero-poster-interactive"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-            }}
             onClick={() => {
               playClickSound()
               onOpenLightbox({
@@ -124,6 +97,7 @@ export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostu
             <div className="poster-inner-frame">
               <img
                 src="/paranormal-fest.jpeg"
+                fetchPriority="high"
                 alt="Afiche oficial Paranormal Fest"
                 className="poster-artwork"
               />

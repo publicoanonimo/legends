@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react'
-import { X, MessageSquare, Check, Sparkles, Copy, QrCode } from 'lucide-react'
+import { X, MessageSquare, Check, Sparkles, Copy, QrCode, Phone } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { playSuccessSound } from '../utils/sound'
+
+export const STAFF_MEMBERS = [
+  { id: 'carlos', name: 'CARLOS', phone: '60109945' },
+  { id: 'limber', name: 'LIMBER', phone: '78765205' },
+  { id: 'mica', name: 'MICA', phone: '76584608' },
+  { id: 'george', name: 'GEORGE', phone: '68176771' },
+  { id: 'moira', name: 'MOIRA', phone: '75264279' },
+  { id: 'lau', name: 'LAU', phone: '75889805' },
+]
 
 const ticketTypes = [
   { id: 'preventa', name: 'Entrada Preventa', price: 10, note: 'Incluye fiesta y Casa del Terror' },
@@ -14,12 +23,14 @@ const ticketTypes = [
 
 export default function BookingModal({ initialPackageId = 'preventa', onClose, onToast }) {
   const [selectedType, setSelectedType] = useState(initialPackageId)
+  const [selectedStaff, setSelectedStaff] = useState(STAFF_MEMBERS[0].id)
   const [quantity, setQuantity] = useState(1)
   const [name, setName] = useState('')
   const [showQr, setShowQr] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const currentItem = ticketTypes.find((t) => t.id === selectedType) || ticketTypes[0]
+  const activeStaff = STAFF_MEMBERS.find((s) => s.id === selectedStaff) || STAFF_MEMBERS[0]
   const totalPrice = currentItem.price * quantity
 
   useEffect(() => {
@@ -34,24 +45,24 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
     }
   }, [onClose])
 
-  const generateWhatsappText = () => {
+  const generateWhatsappText = (staffName = activeStaff.name) => {
     const clientName = name.trim() || 'Amigo de The Legends'
     return encodeURIComponent(
-      `¡Hola THE LEGENDS! 🎃👻\n` +
-      `Quiero reservar para el PARANORMAL FEST (30 de Octubre en San Pedro):\n\n` +
+      `¡Hola ${staffName}! 🎃👻\n` +
+      `Quiero asegurar mi entrada de preventa para el PARANORMAL FEST (30 de Octubre en San Pedro):\n\n` +
       `👤 Nombre: ${clientName}\n` +
       `🎟️ Reserva: ${quantity}x ${currentItem.name}\n` +
       `💰 Total: ${totalPrice} Bs\n` +
       `✨ Incluye: ${currentItem.note}\n\n` +
-      `¿Me envían el QR para confirmar mi reserva? ¡Gracias!`
+      `¿Me envías la información y QR para confirmar mi reserva? ¡Muchas gracias!`
     )
   }
 
-  const handleBooking = () => {
+  const handleDirectChat = (staff) => {
     playSuccessSound()
     try {
       confetti({
-        particleCount: 65,
+        particleCount: 55,
         spread: 60,
         origin: { y: 0.65 },
         colors: ['#ff1744', '#8b2bff', '#00d9ff', '#ffd700'],
@@ -60,20 +71,21 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
       // ignore
     }
 
-    const whatsappUrl = `https://wa.me/?text=${generateWhatsappText()}`
+    const text = generateWhatsappText(staff.name)
+    const whatsappUrl = `https://wa.me/591${staff.phone}?text=${text}`
     window.open(whatsappUrl, '_blank')
 
     if (onToast) {
       onToast({
         type: 'success',
-        title: '¡Reserva iniciada!',
-        message: 'Se abrió WhatsApp para confirmar con los organizadores.',
+        title: `¡Chat con ${staff.name}!`,
+        message: `Abriendo WhatsApp con ${staff.name} (${staff.phone}) para coordinar tu preventa.`,
       })
     }
   }
 
   const handleCopy = () => {
-    const text = decodeURIComponent(generateWhatsappText())
+    const text = decodeURIComponent(generateWhatsappText(activeStaff.name))
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -91,8 +103,8 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
       <div className="booking-modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div>
-            <span className="modal-kicker">✦ THE LEGENDS · RESERVAS</span>
-            <h3 className="modal-title">Asegura tu lugar</h3>
+            <span className="modal-kicker">✦ THE LEGENDS · PREVENTA DIRECTA</span>
+            <h3 className="modal-title">Asegura tu entrada con nuestro Staff</h3>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar modal">
             <X size={20} />
@@ -100,6 +112,52 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
         </div>
 
         <div className="modal-body">
+          {/* Staff Direct Selector */}
+          <div className="field-group">
+            <div className="field-label-row">
+              <label className="field-label">Elige a tu Staff de confianza</label>
+              <span className="field-sub-badge">WhatsApp Directo</span>
+            </div>
+            <div className="staff-grid">
+              {STAFF_MEMBERS.map((staff) => {
+                const isSelected = selectedStaff === staff.id
+                return (
+                  <div
+                    key={staff.id}
+                    className={`staff-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => setSelectedStaff(staff.id)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="staff-card-top">
+                      <div className="staff-radio">
+                        {isSelected && <span className="staff-radio-dot" />}
+                      </div>
+                      <div className="staff-meta">
+                        <strong className="staff-name">{staff.name}</strong>
+                        <span className="staff-number">📱 {staff.phone}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="staff-wa-quick-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedStaff(staff.id)
+                        handleDirectChat(staff)
+                      }}
+                      title={`Chatear con ${staff.name}`}
+                    >
+                      <MessageSquare size={13} />
+                      <span>Chat ↗</span>
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
           <div className="field-group">
             <label className="field-label">Tipo de Reserva / Mesa</label>
             <div className="package-selector">
@@ -123,12 +181,12 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
 
           <div className="modal-row">
             <div className="field-group flex-1">
-              <label className="field-label" htmlFor="client-name">Tu Nombre o de tu Grupo</label>
+              <label className="field-label" htmlFor="client-name">Tu Nombre (opcional)</label>
               <input
                 id="client-name"
                 type="text"
                 className="modal-input"
-                placeholder="Ej. Juan Pérez / Grupo Terror"
+                placeholder="Ej. Juan Pérez / Amigos"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -162,6 +220,7 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
             <div className="summary-left">
               <span className="summary-label">TOTAL A PAGAR</span>
               <strong className="summary-total">{totalPrice} <small>Bs</small></strong>
+              <small className="summary-staff-target">Atendido por: <strong>{activeStaff.name}</strong></small>
             </div>
             <div className="summary-right">
               <button
@@ -182,7 +241,7 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
                 alt="Afiche oficial con código QR de WhatsApp"
                 className="qr-preview-img"
               />
-              <p>Escanea el código QR que viene en el afiche o presiona Reservar por WhatsApp.</p>
+              <p>Escanea el código QR que viene en el afiche o presiona Chatear con {activeStaff.name}.</p>
             </div>
           )}
         </div>
@@ -201,10 +260,10 @@ export default function BookingModal({ initialPackageId = 'preventa', onClose, o
           <button
             type="button"
             className="submit-booking-btn"
-            onClick={handleBooking}
+            onClick={() => handleDirectChat(activeStaff)}
           >
             <MessageSquare size={18} />
-            <span>Reservar por WhatsApp ({totalPrice} Bs)</span>
+            <span>Chatear con {activeStaff.name} ({totalPrice} Bs)</span>
           </button>
         </div>
       </div>

@@ -203,18 +203,7 @@ export default function App() {
               <span>30 OCT · SAN PEDRO</span>
             </div>
 
-            {active === 'inicio' ? (
-              <button
-                className="topbar-cta-btn"
-                onClick={() => {
-                  playClickSound()
-                  setBookingPackage('preventa')
-                }}
-              >
-                <Ticket size={15} />
-                <span className="btn-txt-responsive">Preventa 10 Bs</span>
-              </button>
-            ) : (
+            {active !== 'inicio' && (
               <button
                 className="topbar-return-btn"
                 onClick={() => handleNavClick('inicio')}

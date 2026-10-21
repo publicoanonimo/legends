@@ -9,6 +9,7 @@ import EventFacts from './components/EventFacts'
 import PresaleSection from './components/PresaleSection'
 import TablesSection from './components/TablesSection'
 import SocialSection from './components/SocialSection'
+import StaffSection from './components/StaffSection'
 import BookingModal from './components/BookingModal'
 import LightboxModal from './components/LightboxModal'
 import CostumeModal from './components/CostumeModal'
@@ -195,10 +196,7 @@ export default function App() {
           {active === 'inicio' && (
             <div className="landing-view">
               <HeroSection
-                onOpenBooking={(pkgId) => setBookingPackage(pkgId || 'preventa')}
                 onOpenLightbox={setLightboxImage}
-                onOpenCostume={() => setCostumeModalOpen(true)}
-                onOpenDateModal={() => setDateModalOpen(true)}
               />
 
               <EventFacts
@@ -217,6 +215,7 @@ export default function App() {
               />
 
               <SocialSection />
+              <StaffSection />
             </div>
           )}
 

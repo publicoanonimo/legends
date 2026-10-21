@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Clock, Sparkles, AlertCircle } from 'lucide-react'
+import { Clock } from 'lucide-react'
 
-export default function Countdown({ onOpenDateModal }) {
+export default function Countdown() {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -71,10 +71,9 @@ export default function Countdown({ onOpenDateModal }) {
     >
       <div className="countdown-top-bar">
         <div className="countdown-header-tag">
-          <span className="pulsing-live-dot" />
-          <span className="countdown-tag-text">CUENTA REGRESIVA OFICIAL</span>
+          <Clock size={15} className="text-crimson" />
+          <span className="countdown-tag-text">CUENTA REGRESIVA</span>
         </div>
-        <span className="countdown-venue-tag">30 OCT · SAN PEDRO</span>
       </div>
 
       <div className="countdown-cards-row">
@@ -92,12 +91,6 @@ export default function Countdown({ onOpenDateModal }) {
         ))}
       </div>
 
-      <div className="countdown-footer-bar">
-        <div className="countdown-status-line">
-          <Sparkles size={13} className="text-crimson" />
-          <span>Fase 1: Preventa a <strong>10 Bs</strong> activa por tiempo limitado</span>
-        </div>
-      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Sparkles, Ghost, ExternalLink } from 'lucide-react'
+import { Calendar, MapPin, Ghost, ExternalLink } from 'lucide-react'
 import { playClickSound } from '../utils/sound'
 
 export default function EventFacts({ onOpenDateModal, onOpenCostumeModal }) {
@@ -70,16 +70,6 @@ export default function EventFacts({ onOpenDateModal, onOpenCostumeModal }) {
           </div>
         </button>
 
-        {/* Terror house inclusive perk */}
-        <div className="fact-tile-perk">
-          <div className="perk-icon-wrap">
-            <Sparkles size={18} />
-          </div>
-          <div>
-            <strong>Casa del Terror Incluida</strong>
-            <p>Con tu entrada o mesa accedes a la experiencia de terror inmersivo sin costo extra.</p>
-          </div>
-        </div>
       </div>
     </section>
   )

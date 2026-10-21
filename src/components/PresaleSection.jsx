@@ -1,6 +1,5 @@
-import { Ticket, CheckCircle2, QrCode, Sparkles, MessageSquare, Eye } from 'lucide-react'
+import { Ticket, CheckCircle2, Sparkles, MessageSquare, Eye } from 'lucide-react'
 import { playClickSound } from '../utils/sound'
-import { STAFF_MEMBERS } from './BookingModal'
 
 export default function PresaleSection({ onOpenBooking, onOpenLightbox }) {
   return (
@@ -93,43 +92,6 @@ export default function PresaleSection({ onOpenBooking, onOpenLightbox }) {
               <span>Reservar Preventa por WhatsApp (10 Bs)</span>
             </button>
 
-            <button
-              className="presale-qr-btn"
-              onClick={() => {
-                playClickSound()
-                onOpenLightbox({
-                  src: '/paranormal-preventa.jpeg',
-                  title: 'Afiche Preventa con QR',
-                  alt: 'Afiche preventa Paranormal Fest',
-                  caption: 'Escanea el código QR que viene en el afiche o presiona Reservar por WhatsApp.',
-                })
-              }}
-            >
-              <QrCode size={18} />
-              <span>Ver QR del Afiche</span>
-            </button>
-          </div>
-
-          {/* Quick Staff WhatsApp Direct Links */}
-          <div className="presale-staff-strip">
-            <span className="staff-strip-label">✦ CHATEA DIRECTO CON NUESTRO STAFF (WHATSAPP):</span>
-            <div className="staff-strip-grid">
-              {STAFF_MEMBERS.map((staff) => (
-                <a
-                  key={staff.id}
-                  href={`https://wa.me/591${staff.phone}?text=${encodeURIComponent(`¡Hola ${staff.name}! 🎃👻 Quiero comprar mi preventa de 10 Bs para Paranormal Fest.`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="staff-strip-chip"
-                  onClick={playClickSound}
-                  title={`Chatear con ${staff.name} (${staff.phone})`}
-                >
-                  <span className="staff-chip-dot" />
-                  <strong>{staff.name}</strong>
-                  <span className="staff-chip-phone">{staff.phone}</span>
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </div>

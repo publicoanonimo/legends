@@ -1,8 +1,8 @@
-import { Sparkles, Calendar, MapPin, Ticket, Flame, Eye } from 'lucide-react'
+import { Calendar, MapPin, Eye } from 'lucide-react'
 import Countdown from './Countdown'
 import { playClickSound } from '../utils/sound'
 
-export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostume, onOpenDateModal }) {
+export default function HeroSection({ onOpenLightbox }) {
   return (
     <section className="event-hero-v2">
       <div className="hero-diagonal-ribbon">
@@ -29,34 +29,7 @@ export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostu
 
           {/* Revamped Pro Countdown timer */}
           <div className="hero-countdown-wrapper">
-            <Countdown onOpenDateModal={onOpenDateModal} />
-          </div>
-
-          {/* Action buttons */}
-          <div className="hero-action-row">
-            <button
-              className="hero-primary-cta"
-              onClick={() => {
-                playClickSound()
-                onOpenBooking('preventa')
-              }}
-            >
-              <Ticket size={18} />
-              <span>Asegurar Preventa (10 Bs)</span>
-              <Sparkles size={16} className="cta-sparkle" />
-            </button>
-
-            <button
-              className="hero-secondary-cta"
-              onClick={() => {
-                playClickSound()
-                const el = document.getElementById('tables-section')
-                if (el) el.scrollIntoView({ behavior: 'smooth' })
-              }}
-            >
-              <Flame size={17} />
-              <span>Ver Mesas VIP</span>
-            </button>
+            <Countdown />
           </div>
 
           {/* Hero key notes */}
@@ -69,10 +42,6 @@ export default function HeroSection({ onOpenBooking, onOpenLightbox, onOpenCostu
             <div className="hero-perk">
               <MapPin size={15} className="text-crimson" />
               <span>San Pedro, Bolivia</span>
-            </div>
-            <div className="hero-perk-sep">·</div>
-            <div className="hero-perk highlight-perk">
-              <span>Casa de Terror Incluida</span>
             </div>
           </div>
         </div>

@@ -100,6 +100,13 @@ export default function App() {
               <p className="booking-note"><span>✦</span> Para reservas e información, utiliza el código QR de WhatsApp que aparece en los afiches del evento.</p>
             </section>
 
+            <section className="social-section" aria-labelledby="social-title">
+              <div className="content-heading"><div><span className="section-kicker">SÍGUENOS Y ÚNETE</span><h2 id="social-title">Nuestras redes</h2></div></div>
+              <div className="social-links">
+                <a className="social-button social-tiktok" href="https://www.tiktok.com/@the_legends.bo?_r=1&_t=ZS-9Ak0Lt8Iffp" target="_blank" rel="noreferrer" aria-label="Visita The Legends en TikTok"><span className="social-symbol" aria-hidden="true">♪</span><span><strong>TikTok</strong><small>@the_legends.bo</small></span><span className="social-arrow" aria-hidden="true">↗</span></a>
+                <a className="social-button social-whatsapp" href="https://chat.whatsapp.com/JeMa1gw04jv0Wjaw8roizw" target="_blank" rel="noreferrer" aria-label="Únete al grupo de WhatsApp de The Legends"><span className="social-symbol" aria-hidden="true">◉</span><span><strong>WhatsApp</strong><small>Únete a nuestra comunidad</small></span><span className="social-arrow" aria-hidden="true">↗</span></a>
+              </div>
+            </section>
             <footer className="home-footer"><span>© 2026 THE LEGENDS</span><span>EL COMIENZO DE ALGO GRANDE <b>✦</b></span></footer>
           </div>
         ) : <div className="empty-module" aria-label={`${activeModule.label} vacío`} />}

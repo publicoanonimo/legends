@@ -75,18 +75,21 @@ export default function PresaleSection({ onOpenBooking, onOpenLightbox }) {
             </div>
           </div>
 
-          <div className="presale-cta-actions">
+          <div className="package-card-footer presale-package-footer">
+            <div className="package-price-box">
+              <span className="price-small-label">PRECIO TOTAL</span>
+              <strong className="package-price-val">10 <small>Bs</small></strong>
+            </div>
             <button
-              className="presale-buy-btn"
+              className="package-reserve-btn"
               onClick={() => {
                 playClickSound()
                 onOpenBooking('preventa')
               }}
             >
-              <MessageSquare size={18} />
-              <span>Reservar Preventa por WhatsApp (10 Bs)</span>
+              <MessageSquare size={16} />
+              <span>Reservar</span>
             </button>
-
           </div>
         </div>
       </div>

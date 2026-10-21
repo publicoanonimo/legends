@@ -18,9 +18,6 @@ import CostumeModal from './components/CostumeModal'
 import DateModal from './components/DateModal'
 import Toast from './components/Toast'
 import LoginModal from './components/LoginModal'
-import DashboardModule from './components/modules/DashboardModule'
-import CajaModule from './components/modules/CajaModule'
-import InventarioModule from './components/modules/InventarioModule'
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -264,11 +261,6 @@ export default function App() {
             </div>
           )}
 
-          {isAdmin && active === 'dashboard' && (
-            <DashboardModule onNavigate={handleNavClick} onToast={showToast} />
-          )}
-          {isAdmin && active === 'caja' && <CajaModule onToast={showToast} />}
-          {isAdmin && active === 'inventario' && <InventarioModule onToast={showToast} />}
 
         </main>
       </div>

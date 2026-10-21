@@ -2255,10 +2255,10 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
+  padding: 34px 0;
   border-top: 1px solid var(--border-subtle);
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 16px;
+  color: var(--text-secondary);
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -2269,19 +2269,6 @@ code {
   gap: 12px;
 }
 
-.footer-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--crimson-glow);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 800;
-}
-
 .footer-left div {
   display: flex;
   flex-direction: column;
@@ -2289,11 +2276,12 @@ code {
 
 .footer-left strong {
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 18px;
 }
 
 .footer-left small {
-  color: var(--text-faint);
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .footer-right {
@@ -2301,6 +2289,7 @@ code {
   align-items: center;
   gap: 8px;
   font-weight: 700;
+  font-size: 15px;
   letter-spacing: 0.1em;
   color: var(--text-muted);
 }

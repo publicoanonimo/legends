@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { Sparkles, Users, Wine, MessageSquare, Eye, Filter } from 'lucide-react'
+import { Sparkles, Users, Wine, MessageSquare, Eye } from 'lucide-react'
 import { playClickSound } from '../utils/sound'
 
 const packages = [
@@ -91,13 +90,6 @@ const packages = [
 ]
 
 export default function TablesSection({ onOpenBooking, onOpenLightbox }) {
-  const [filter, setFilter] = useState('Todos')
-  const categories = ['Todos', 'Singani', 'Ron', 'Jäger', 'Whisky']
-
-  const filtered = packages.filter(
-    (p) => filter === 'Todos' || p.category === filter
-  )
-
   return (
     <section id="tables-section" className="tables-section-v2">
       <div className="section-head-bar">
@@ -108,24 +100,10 @@ export default function TablesSection({ onOpenBooking, onOpenLightbox }) {
             Una noche · Dos experiencias · Un solo lugar. Todas las mesas incluyen 10 manillas + 1 Free Pass.
           </p>
         </div>
-        <div className="tables-filter-row">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`table-filter-pill ${filter === cat ? 'active' : ''}`}
-              onClick={() => {
-                playClickSound()
-                setFilter(cat)
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="packages-v2-grid">
-        {filtered.map((pkg) => (
+        {packages.map((pkg) => (
           <article key={pkg.id} className="package-card-v2">
             {/* Visual Thumbnail */}
             <div

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   Home, LayoutDashboard, Banknote, Package, Menu, X, Ticket, Calendar,
-  ChevronRight, LogIn, LogOut
+  ChevronRight, UserRound, LogOut
 } from 'lucide-react'
 
 // Components
@@ -186,10 +186,17 @@ export default function App() {
         {/* Topbar Header */}
         <header className="topbar-v2">
           {!isAdmin ? (
-            <button className="organizer-login-btn" onClick={() => setLoginOpen(true)}>
-              <LogIn size={17} />
-              <span>Organizador</span>
-            </button>
+            <div className="visitor-header-actions">
+              <span className="visitor-welcome">Bienvenido</span>
+              <button
+                className="organizer-login-btn"
+                onClick={() => setLoginOpen(true)}
+                aria-label="Iniciar sesión de organizador"
+                title="Iniciar sesión"
+              >
+                <UserRound size={17} />
+              </button>
+            </div>
           ) : (
             <>
           <div className="topbar-left">

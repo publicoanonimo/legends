@@ -62,13 +62,7 @@ export default function Countdown() {
   ]
 
   return (
-    <div
-      className="countdown-widget-pro"
-      aria-label="Cuenta regresiva para Paranormal Fest"
-      onClick={onOpenDateModal}
-      role={onOpenDateModal ? 'button' : undefined}
-      tabIndex={onOpenDateModal ? 0 : undefined}
-    >
+    <div className="countdown-widget-pro" aria-label="Cuenta regresiva para Paranormal Fest">
       <div className="countdown-top-bar">
         <div className="countdown-header-tag">
           <Clock size={15} className="text-crimson" />

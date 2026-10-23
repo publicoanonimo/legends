@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import {
   Home, LayoutDashboard, Banknote, Package, Menu, X, Ticket, Calendar,
   ChevronRight, UserRound, LogOut
@@ -12,13 +12,14 @@ import TablesSection from './components/TablesSection'
 import SocialSection from './components/SocialSection'
 import StaffSection from './components/StaffSection'
 import FooterSection from './components/FooterSection'
-import BookingModal from './components/BookingModal'
-import LightboxModal from './components/LightboxModal'
-import CostumeModal from './components/CostumeModal'
-import DateModal from './components/DateModal'
 import Toast from './components/Toast'
-import LoginModal from './components/LoginModal'
-import DashboardModule from './components/DashboardModule'
+
+const BookingModal = lazy(() => import('./components/BookingModal'))
+const LightboxModal = lazy(() => import('./components/LightboxModal'))
+const CostumeModal = lazy(() => import('./components/CostumeModal'))
+const DateModal = lazy(() => import('./components/DateModal'))
+const LoginModal = lazy(() => import('./components/LoginModal'))
+const DashboardModule = lazy(() => import('./components/DashboardModule'))
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -238,7 +239,11 @@ export default function App() {
             </div>
           )}
 
-          {active === 'dashboard' && <DashboardModule />}
+          {active === 'dashboard' && (
+            <Suspense fallback={<p className="registration-loading">Cargando panel…</p>}>
+              <DashboardModule />
+            </Suspense>
+          )}
 
 
         </main>
@@ -265,36 +270,42 @@ export default function App() {
       )}
 
       {/* Modals */}
-      {loginOpen && (
-        <LoginModal onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
-      )}
-      {bookingPackage && (
-        <BookingModal
-          initialPackageId={bookingPackage}
-          onClose={() => setBookingPackage(null)}
-          onToast={showToast}
-        />
-      )}
+      <Suspense fallback={(
+        <div className="modal-backdrop" role="status" aria-live="polite">
+          <div className="booking-modal-card">Cargando…</div>
+        </div>
+      )}>
+        {loginOpen && (
+          <LoginModal onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
+        )}
+        {bookingPackage && (
+          <BookingModal
+            initialPackageId={bookingPackage}
+            onClose={() => setBookingPackage(null)}
+            onToast={showToast}
+          />
+        )}
 
-      {lightboxImage && (
-        <LightboxModal
-          image={lightboxImage}
-          onClose={() => setLightboxImage(null)}
-        />
-      )}
+        {lightboxImage && (
+          <LightboxModal
+            image={lightboxImage}
+            onClose={() => setLightboxImage(null)}
+          />
+        )}
 
-      {costumeModalOpen && (
-        <CostumeModal
-          onClose={() => setCostumeModalOpen(false)}
-          onToast={showToast}
-        />
-      )}
+        {costumeModalOpen && (
+          <CostumeModal
+            onClose={() => setCostumeModalOpen(false)}
+            onToast={showToast}
+          />
+        )}
 
-      {dateModalOpen && (
-        <DateModal
-          onClose={() => setDateModalOpen(false)}
-        />
-      )}
+        {dateModalOpen && (
+          <DateModal
+            onClose={() => setDateModalOpen(false)}
+          />
+        )}
+      </Suspense>
     </div>
   )
 }

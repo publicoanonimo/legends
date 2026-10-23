@@ -1,25 +1,12 @@
-import { initializeApp } from 'firebase/app'
-import { getAnalytics, isSupported } from 'firebase/analytics'
-import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import { app } from './firebaseApp'
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyAc7CitvcJ2u2a5WGW0Lq6ve73pbDSO71A',
-  authDomain: 'bdlegends.firebaseapp.com',
-  projectId: 'bdlegends',
-  storageBucket: 'bdlegends.firebasestorage.app',
-  messagingSenderId: '417618092579',
-  appId: '1:417618092579:web:568944e4d00a4482248796',
-  measurementId: 'G-LQN8H9NB18',
-}
-
-export const app = initializeApp(firebaseConfig)
-export const auth = getAuth(app)
 export const db = getFirestore(app)
-export const storage = getStorage(app)
 
-// Analytics only works in supported browser environments.
-export const analytics = isSupported().then((supported) =>
-  supported ? getAnalytics(app) : null,
-)
+// Load optional Firebase products only when the application starts using them.
+export const getAuthService = async () => (await import('firebase/auth')).getAuth(app)
+export const getStorageService = async () => (await import('firebase/storage')).getStorage(app)
+export const getAnalyticsService = async () => {
+  const { getAnalytics, isSupported } = await import('firebase/analytics')
+  return (await isSupported()) ? getAnalytics(app) : null
+}

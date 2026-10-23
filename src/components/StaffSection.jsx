@@ -1,4 +1,4 @@
-import { STAFF_MEMBERS } from './BookingModal'
+import { STAFF_MEMBERS } from '../staff'
 import { playClickSound } from '../utils/sound'
 
 export default function StaffSection() {

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { X, PartyPopper, UserRound, UsersRound } from 'lucide-react'
-import { db } from '../firebase'
 import { playEerieSound } from '../utils/sound'
 
 export default function CostumeModal({ onClose, onToast }) {
@@ -46,6 +44,10 @@ export default function CostumeModal({ onClose, onToast }) {
         }
 
     try {
+      const [{ db }, { addDoc, collection, serverTimestamp }] = await Promise.all([
+        import('../firebase'),
+        import('firebase/firestore'),
+      ])
       await addDoc(collection(db, 'costumeRegistrations'), {
         ...registration,
         createdAt: serverTimestamp(),

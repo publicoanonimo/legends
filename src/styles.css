@@ -3027,6 +3027,79 @@ code {
   text-align: center;
 }
 
+.costume-registration-types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.costume-type-option {
+  min-height: 48px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.costume-type-option:hover,
+.costume-type-option.selected {
+  border-color: var(--crimson-glow);
+  background: rgba(255, 23, 68, 0.12);
+  color: var(--text-pure);
+}
+
+.costume-registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.costume-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.costume-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  outline: none;
+  background: var(--bg-surface-2);
+  color: var(--text-pure);
+  font: inherit;
+  font-weight: 400;
+}
+
+.costume-field input:focus {
+  border-color: var(--crimson-glow);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.12);
+}
+
+.costume-field input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.costume-register-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .costume-ideas-grid {
   display: grid;
   grid-template-columns: 1fr;

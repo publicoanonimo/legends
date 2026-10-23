@@ -283,6 +283,7 @@ export default function App() {
       {costumeModalOpen && (
         <CostumeModal
           onClose={() => setCostumeModalOpen(false)}
+          onToast={showToast}
         />
       )}
 

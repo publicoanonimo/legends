@@ -64,9 +64,9 @@ export default function EventFacts({ onOpenDateModal, onOpenCostumeModal }) {
             <Ghost size={20} />
           </div>
           <div className="fact-tile-copy">
-            <span className="fact-tile-label">CÓDIGO DE VESTIMENTA</span>
-            <strong className="fact-tile-val">¡Ven Disfrazado!</strong>
-            <span className="fact-tile-hint">Concurso & Premios ✦</span>
+            <span className="fact-tile-label">CONCURSO DE DISFRACES</span>
+            <strong className="fact-tile-val">¡Inscríbete!</strong>
+            <span className="fact-tile-hint">Registro individual y grupal ✦</span>
           </div>
         </button>
 

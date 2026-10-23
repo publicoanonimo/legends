@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import {
   Home, LayoutDashboard, Banknote, Package, Menu, X, Ticket, Calendar,
   ChevronRight, UserRound, LogOut
@@ -19,6 +20,7 @@ import DateModal from './components/DateModal'
 import Toast from './components/Toast'
 import LoginModal from './components/LoginModal'
 import DashboardModule from './components/DashboardModule'
+import { auth } from './firebase'
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -53,6 +55,15 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize)
   }, [isAdmin])
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAdmin(Boolean(user))
+      if (!user) setSidebarOpen(false)
+    })
+
+    return unsubscribe
+  }, [])
+
   const showToast = (toastData) => {
     setToast(toastData)
   }
@@ -66,19 +77,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleLogin = (username, password) => {
-    const validCredentials =
-      (username === 'admin' && password === 'admin') ||
-      (username === 'carlos' && password === '60109945')
-    if (!validCredentials) return false
+  const handleLogin = async (email, password) => {
+    await signInWithEmailAndPassword(auth, email, password)
     setIsAdmin(true)
     setActive('dashboard')
     setSidebarOpen(window.innerWidth >= 1024)
     setLoginOpen(false)
-    return true
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut(auth)
     setIsAdmin(false)
     setActive('inicio')
     setSidebarOpen(false)

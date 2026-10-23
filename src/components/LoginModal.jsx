@@ -2,14 +2,23 @@ import { useState } from 'react'
 import { KeyRound, LogIn, X } from 'lucide-react'
 
 export default function LoginModal({ onClose, onLogin }) {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault()
-    if (!onLogin(username.trim(), password)) {
-      setError('Usuario o contraseña incorrectos.')
+    setError('')
+    setSubmitting(true)
+
+    try {
+      await onLogin(email.trim(), password)
+    } catch (loginError) {
+      console.error('No se pudo iniciar sesión:', loginError)
+      setError('Correo o contraseña incorrectos.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -35,13 +44,14 @@ export default function LoginModal({ onClose, onLogin }) {
 
         <div className="modal-body">
           <div className="field-group">
-            <label className="field-label" htmlFor="organizer-username">Usuario</label>
+            <label className="field-label" htmlFor="organizer-email">Correo electrónico</label>
             <input
-              id="organizer-username"
+              id="organizer-email"
               className="modal-input"
-              autoComplete="username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               required
             />
           </div>
@@ -61,9 +71,9 @@ export default function LoginModal({ onClose, onLogin }) {
         </div>
 
         <div className="modal-footer">
-          <button className="submit-booking-btn" type="submit">
+          <button className="submit-booking-btn" type="submit" disabled={submitting}>
             <LogIn size={17} />
-            <span>Entrar al panel</span>
+            <span>{submitting ? 'Ingresando…' : 'Entrar al panel'}</span>
             <KeyRound size={16} />
           </button>
         </div>

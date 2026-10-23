@@ -18,6 +18,7 @@ import CostumeModal from './components/CostumeModal'
 import DateModal from './components/DateModal'
 import Toast from './components/Toast'
 import LoginModal from './components/LoginModal'
+import DashboardModule from './components/DashboardModule'
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -236,6 +237,8 @@ export default function App() {
               <FooterSection />
             </div>
           )}
+
+          {active === 'dashboard' && <DashboardModule />}
 
 
         </main>

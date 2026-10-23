@@ -204,12 +204,12 @@ code {
   to { --rgb-border-angle: 360deg; }
 }
 
-:is(.staff-strip-chip, .staff-chat-submit-btn) {
+:is(button, a[class*="-btn"], a.social-hub-card, a.staff-strip-chip) {
   position: relative;
   isolation: isolate;
 }
 
-:is(.staff-strip-chip, .staff-chat-submit-btn)::after {
+:is(button, a[class*="-btn"], a.social-hub-card, a.staff-strip-chip)::after {
   content: '';
   position: absolute;
   inset: 0;

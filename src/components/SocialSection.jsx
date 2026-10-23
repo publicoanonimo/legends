@@ -1,4 +1,4 @@
-import { ExternalLink, MessageCircle, Music2 } from 'lucide-react'
+import { MessageCircle, Music2 } from 'lucide-react'
 import { playClickSound } from '../utils/sound'
 
 function FacebookIcon({ size = 24, className }) {
@@ -33,9 +33,6 @@ export default function SocialSection() {
           <div className="hub-info">
             <strong className="hub-handle">Facebook</strong>
           </div>
-          <div className="hub-arrow-box">
-            <ExternalLink size={18} />
-          </div>
         </a>
 
         {/* TikTok Card */}
@@ -52,9 +49,6 @@ export default function SocialSection() {
           <div className="hub-info">
             <strong className="hub-handle">TikTok</strong>
           </div>
-          <div className="hub-arrow-box">
-            <ExternalLink size={18} />
-          </div>
         </a>
 
         {/* WhatsApp Group Card */}
@@ -70,9 +64,6 @@ export default function SocialSection() {
           </div>
           <div className="hub-info">
             <strong className="hub-handle">WhatsApp</strong>
-          </div>
-          <div className="hub-arrow-box">
-            <ExternalLink size={18} />
           </div>
         </a>
       </div>

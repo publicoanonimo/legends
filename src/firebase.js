@@ -10,8 +10,8 @@ const firebaseConfig = {
   projectId: 'bdlegends',
   storageBucket: 'bdlegends.firebasestorage.app',
   messagingSenderId: '417618092579',
-  appId: '1:417618092579:web:b86f66a9b58eb566248796',
-  measurementId: 'G-876MLD9V6R',
+  appId: '1:417618092579:web:568944e4d00a4482248796',
+  measurementId: 'G-LQN8H9NB18',
 }
 
 export const app = initializeApp(firebaseConfig)

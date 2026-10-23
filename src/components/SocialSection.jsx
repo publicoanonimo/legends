@@ -14,11 +14,7 @@ export default function SocialSection() {
     <section className="social-section-v2" aria-labelledby="social-heading">
       <div className="section-head-bar">
         <div>
-          <span className="section-kicker">✦ COMUNIDAD OFICIAL</span>
           <h2 id="social-heading" className="section-title">Únete a The Legends</h2>
-          <p className="section-subtitle">
-            Entérate de las dinámicas, pistas de la Casa del Terror y sorteos de entradas en nuestras redes.
-          </p>
         </div>
       </div>
 

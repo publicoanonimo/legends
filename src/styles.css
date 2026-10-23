@@ -1923,13 +1923,13 @@ code {
 }
 
 .staff-strip-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
 .staff-strip-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 7px;
   padding: 6px 12px;
@@ -2274,7 +2274,7 @@ code {
 
 .social-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin: 16px 0 28px;
 }
@@ -2386,11 +2386,6 @@ code {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.footer-left div {
-  display: flex;
-  flex-direction: column;
 }
 
 .footer-left strong {
@@ -5102,6 +5097,10 @@ code {
   }
 
   .social-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-strip-grid {
     grid-template-columns: 1fr;
   }
 

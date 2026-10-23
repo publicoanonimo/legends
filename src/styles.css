@@ -1560,8 +1560,12 @@ code {
 
 .facts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr) 1.2fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+}
+
+.facts-title {
+  margin-bottom: 0;
 }
 
 .fact-tile-btn {
@@ -4942,7 +4946,7 @@ code {
   }
 
   .facts-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .packages-v2-grid {

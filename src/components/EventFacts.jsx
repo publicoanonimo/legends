@@ -5,15 +5,10 @@ export default function EventFacts({ onOpenDateModal, onOpenCostumeModal }) {
   return (
     <section className="event-facts-section">
       <div className="facts-intro-box">
-        <span className="section-kicker">✦ PREPARA TU GRUPO</span>
-        <h2 className="section-title">¿Te atreves a entrar al Paranormal?</h2>
-        <p className="section-desc">
-          Este 30 de octubre, THE LEGENDS transforma San Pedro en el epicentro del terror.
-          Reúne a tus amigos, viste tu caracterización más impactante y sé parte de la noche más esperada del año.
-        </p>
+        <h2 className="section-title facts-title">¿Te lo vas a perder?</h2>
       </div>
 
-      <div className="facts-grid">
+      <div className="facts-grid" aria-label="Información del evento">
         {/* Date card */}
         <button
           type="button"

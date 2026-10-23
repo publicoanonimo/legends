@@ -9,8 +9,7 @@ const packages = [
     category: 'Singani',
     price: 250,
     liquor: 'La Casa Real (Singani)',
-    image: '/mesas-pennywise-infierno.jpeg',
-    cropClass: 'crop-pennywise',
+    image: '/mesa-pennywise.jpeg',
     items: [
       'Botella La Casa Real',
       '10 Manillas oficiales',
@@ -26,8 +25,7 @@ const packages = [
     category: 'Ron',
     price: 260,
     liquor: 'Ron Flor de Caña / Havana',
-    image: '/mesas-pennywise-infierno.jpeg',
-    cropClass: 'crop-infierno',
+    image: '/mesa-infierno.jpeg',
     items: [
       'Botella de Ron premium',
       '10 Manillas oficiales',
@@ -43,8 +41,7 @@ const packages = [
     category: 'Jäger',
     price: 300,
     liquor: 'Jägermeister + 2 Red Bull',
-    image: '/mesas-fantasma-maldita-conjuro.jpeg',
-    cropClass: 'crop-fantasma',
+    image: '/mesa-fantasma.jpeg',
     items: [
       'Botella de Jägermeister',
       '2 Latas de Red Bull',
@@ -60,8 +57,7 @@ const packages = [
     category: 'Whisky',
     price: 280,
     liquor: 'Whisky Rebel',
-    image: '/mesas-fantasma-maldita-conjuro.jpeg',
-    cropClass: 'crop-maldita',
+    image: '/mesa-maldita.jpeg',
     items: [
       'Botella de Whisky Rebel',
       'Refresco mezclador',
@@ -77,8 +73,7 @@ const packages = [
     category: 'Ron',
     price: 280,
     liquor: 'Botella de Ron Especial',
-    image: '/mesas-fantasma-maldita-conjuro.jpeg',
-    cropClass: 'crop-conjuro',
+    image: '/mesa-conjuro.jpeg',
     items: [
       'Botella de Ron especial',
       'Refresco mezclador',
@@ -107,7 +102,7 @@ export default function TablesSection({ onOpenBooking, onOpenLightbox }) {
           <article key={pkg.id} className="package-card-v2">
             {/* Visual Thumbnail */}
             <div
-              className={`package-poster-box ${pkg.cropClass}`}
+              className="package-poster-box"
               onClick={() => {
                 playClickSound()
                 onOpenLightbox({

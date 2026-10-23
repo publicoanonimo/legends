@@ -2017,7 +2017,7 @@ code {
 
 .package-card-v2 {
   display: grid;
-  grid-template-columns: 190px 1fr;
+  grid-template-columns: 1fr;
   border-radius: 16px;
   overflow: hidden;
   background: rgba(22, 11, 16, 0.78);
@@ -2040,31 +2040,15 @@ code {
   overflow: hidden;
   background: #000;
   cursor: pointer;
-  min-height: 250px;
+  aspect-ratio: 2 / 1;
 }
 
 .package-thumb-img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform var(--duration-normal);
-}
-
-/* Precise crop offsets for dual-flyers */
-.crop-pennywise .package-thumb-img {
-  object-position: center 15%;
-}
-.crop-infierno .package-thumb-img {
-  object-position: center 60%;
-}
-.crop-fantasma .package-thumb-img {
-  object-position: center 12%;
-}
-.crop-maldita .package-thumb-img {
-  object-position: center 48%;
-}
-.crop-conjuro .package-thumb-img {
-  object-position: center 84%;
 }
 
 .package-poster-box:hover .package-thumb-img {
@@ -4949,7 +4933,7 @@ code {
   }
 
   .package-card-v2 {
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 1fr;
   }
 
   .kpi-grid {
@@ -5092,8 +5076,9 @@ code {
   }
 
   .package-poster-box {
-    height: 220px;
-    min-height: auto;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 2 / 1;
   }
 
   .social-cards-grid {

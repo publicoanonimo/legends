@@ -31,9 +31,7 @@ export default function SocialSection() {
             <FacebookIcon size={24} />
           </div>
           <div className="hub-info">
-            <span className="hub-brand-name">Facebook Oficial</span>
-            <strong className="hub-handle">The Legends · Publicación Oficial</strong>
-            <p className="hub-desc">Comparte el evento oficial de Paranormal Fest, fotos y dinámicas.</p>
+            <strong className="hub-handle">Facebook</strong>
           </div>
           <div className="hub-arrow-box">
             <ExternalLink size={18} />
@@ -52,9 +50,7 @@ export default function SocialSection() {
             <Music2 size={24} />
           </div>
           <div className="hub-info">
-            <span className="hub-brand-name">TikTok Oficial</span>
-            <strong className="hub-handle">@the_legends.bo</strong>
-            <p className="hub-desc">Videos promocionales, trends y avances de la temática.</p>
+            <strong className="hub-handle">TikTok</strong>
           </div>
           <div className="hub-arrow-box">
             <ExternalLink size={18} />
@@ -73,9 +69,7 @@ export default function SocialSection() {
             <MessageCircle size={24} />
           </div>
           <div className="hub-info">
-            <span className="hub-brand-name">Comunidad de WhatsApp</span>
-            <strong className="hub-handle">Grupo Oficial · The Legends</strong>
-            <p className="hub-desc">Consultas rápidas, venta de manillas y anuncios en vivo.</p>
+            <strong className="hub-handle">WhatsApp</strong>
           </div>
           <div className="hub-arrow-box">
             <ExternalLink size={18} />

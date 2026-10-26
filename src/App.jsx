@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import {
-  Home, LayoutDashboard, Banknote, Package, Menu, X, Ticket, Calendar,
+  Home, ClipboardList, Banknote, Package, Menu, X, Ticket, Calendar,
   ChevronRight, UserRound, LogOut
 } from 'lucide-react'
 
@@ -26,7 +26,7 @@ import { playClickSound } from './utils/sound'
 
 const modules = [
   { id: 'inicio', label: 'Inicio', icon: Home, desc: 'Evento & Preventa' },
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Métricas & Aforo' },
+  { id: 'dashboard', label: 'Inscritos', icon: ClipboardList, desc: 'Registro personal y grupal' },
   { id: 'caja', label: 'Caja POS', icon: Banknote, desc: 'Cobro de Puerta' },
   { id: 'inventario', label: 'Inventario', icon: Package, desc: 'Stock & Barra' },
 ]
@@ -68,10 +68,14 @@ export default function App() {
   }
 
   const handleLogin = (username, password) => {
-    const validCredentials =
-      (username === 'admin' && password === 'admin') ||
-      (username === 'carlos' && password === '60109945')
-    if (!validCredentials) return false
+    const credentials = {
+      admin: 'admin',
+      carlos: '60109945',
+      mica: '76584608',
+      george: '68176771',
+      moira: '75264279',
+    }
+    if (credentials[username] !== password) return false
     setIsAdmin(true)
     setActive('dashboard')
     setSidebarOpen(window.innerWidth >= 1024)

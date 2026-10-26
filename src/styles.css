@@ -3643,6 +3643,75 @@ code {
   font-size: 10px;
 }
 
+.registration-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.registration-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 23, 68, 0.35);
+  border-radius: 7px;
+  background: rgba(255, 23, 68, 0.1);
+  color: #ff9aaa;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all var(--duration-fast);
+}
+
+.registration-delete-btn:hover {
+  border-color: rgba(255, 23, 68, 0.6);
+  background: rgba(255, 23, 68, 0.22);
+  color: var(--text-pure);
+}
+
+.registration-delete-btn:active {
+  transform: scale(0.96);
+}
+
+.delete-modal-card {
+  max-width: 460px;
+}
+
+.delete-modal-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255, 23, 68, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 23, 68, 0.08);
+  color: #ff9aaa;
+}
+
+.delete-modal-warning svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.delete-modal-warning p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.delete-modal-warning strong {
+  color: var(--text-pure);
+  word-break: break-word;
+}
+
+.delete-confirm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
 .registration-empty,
 .registration-loading,
 .registration-error {
@@ -4830,6 +4899,12 @@ code {
 
   .registration-item-meta {
     align-items: flex-start;
+  }
+
+  .registration-item-actions {
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 
   .topbar-v2 {

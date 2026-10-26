@@ -4687,19 +4687,21 @@ code {
 
 .inv-name {
   font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--text-pure);
-  margin-top: 2px;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .inv-status-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 9999px;
   white-space: nowrap;
 }
@@ -4728,14 +4730,15 @@ code {
 
 .stock-big-num {
   font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 900;
   color: var(--text-pure);
 }
 
 .stock-unit-label {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
+  font-weight: 700;
 }
 
 .stock-percent {
@@ -4806,6 +4809,32 @@ code {
 .inv-stepper button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .inv-name {
+    font-size: 18px;
+  }
+
+  .stock-big-num {
+    font-size: 28px;
+  }
+
+  .stock-unit-label {
+    font-size: 14px;
+  }
+
+  .inv-price-row {
+    font-size: 11px;
+  }
+
+  .inv-price-row strong {
+    font-size: 13px;
+  }
+
+  .stock-hint {
+    font-size: 11px;
+  }
 }
 
 /* ==========================================================================
@@ -5297,13 +5326,13 @@ code {
   justify-content: space-between;
   gap: 12px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .inv-price-row strong {
   color: var(--text-pure);
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
   white-space: nowrap;
 }

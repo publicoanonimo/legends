@@ -20,7 +20,7 @@ const CostumeModal = lazy(() => import('./components/CostumeModal'))
 const DateModal = lazy(() => import('./components/DateModal'))
 const LoginModal = lazy(() => import('./components/LoginModal'))
 const DashboardModule = lazy(() => import('./components/DashboardModule'))
-const CajaModule = lazy(() => import('./components/CajaModule'))
+const InventarioModule = lazy(() => import('./components/InventarioModule'))
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -251,8 +251,23 @@ export default function App() {
           )}
 
           {active === 'caja' && (
-            <Suspense fallback={<p className="registration-loading">Cargando caja…</p>}>
-              <CajaModule onToast={showToast} />
+            <section className="dashboard-module">
+              <div className="dashboard-page-heading">
+                <div>
+                  <span className="dashboard-eyebrow">CAJA POS</span>
+                  <h1>Caja POS</h1>
+                  <p>La gestión de productos ahora está en el módulo Inventario.</p>
+                </div>
+              </div>
+              <p className="pos-empty-note">
+                Abre <strong>Inventario</strong> en el menú para crear, editar o eliminar productos.
+              </p>
+            </section>
+          )}
+
+          {active === 'inventario' && (
+            <Suspense fallback={<p className="registration-loading">Cargando inventario…</p>}>
+              <InventarioModule onToast={showToast} />
             </Suspense>
           )}
 

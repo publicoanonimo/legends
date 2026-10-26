@@ -3,11 +3,12 @@ import {
   addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc,
 } from 'firebase/firestore'
 import {
-  Banknote, CheckCircle2, KeyRound, Pencil, Plus, QrCode, ShieldAlert, ShoppingBag, Trash2, X,
+  KeyRound, Package, Pencil, Plus, ShieldAlert, Trash2, X,
 } from 'lucide-react'
 import { db } from '../firebase'
 
 const SUPERADMIN_PASSWORD = 'admin001'
+const LOW_STOCK_LIMIT = 3
 
 function formatPrice(value) {
   const price = Number(value)
@@ -20,10 +21,34 @@ function formatPrice(value) {
   }).format(price)
 }
 
+function getQuantity(product) {
+  const quantity = Number(product.quantity)
+  return Number.isFinite(quantity) ? quantity : 0
+}
+
+function getPurchasePrice(product) {
+  const price = Number(product.purchasePrice)
+  return Number.isFinite(price) ? price : 0
+}
+
+function getSalePrice(product) {
+  const salePrice = Number(product.salePrice)
+  if (Number.isFinite(salePrice)) return salePrice
+
+  const legacyPrice = Number(product.price)
+  return Number.isFinite(legacyPrice) ? legacyPrice : 0
+}
+
 function ProductFormModal({ product, onClose, onToast }) {
   const isEditing = Boolean(product)
   const [name, setName] = useState(product?.name || '')
-  const [price, setPrice] = useState(product ? String(product.price) : '')
+  const [quantity, setQuantity] = useState(product ? String(getQuantity(product)) : '')
+  const [purchasePrice, setPurchasePrice] = useState(
+    product ? String(getPurchasePrice(product)) : '',
+  )
+  const [salePrice, setSalePrice] = useState(
+    product ? String(getSalePrice(product)) : '',
+  )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -39,15 +64,27 @@ function ProductFormModal({ product, onClose, onToast }) {
     event.preventDefault()
 
     const trimmedName = name.trim()
-    const numericPrice = Number(price)
+    const numericQuantity = Number(quantity)
+    const numericPurchasePrice = Number(purchasePrice)
+    const numericSalePrice = Number(salePrice)
 
     if (!trimmedName) {
       setError('Escribe el nombre del producto.')
       return
     }
 
-    if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
-      setError('Escribe un precio válido mayor a 0.')
+    if (quantity.trim() === '' || !Number.isInteger(numericQuantity) || numericQuantity < 0) {
+      setError('La cantidad debe ser un número entero igual o mayor a 0.')
+      return
+    }
+
+    if (purchasePrice.trim() === '' || !Number.isFinite(numericPurchasePrice) || numericPurchasePrice < 0) {
+      setError('Escribe un precio de compra válido.')
+      return
+    }
+
+    if (salePrice.trim() === '' || !Number.isFinite(numericSalePrice) || numericSalePrice <= 0) {
+      setError('Escribe un precio de venta válido mayor a 0.')
       return
     }
 
@@ -58,13 +95,17 @@ function ProductFormModal({ product, onClose, onToast }) {
       if (isEditing) {
         await updateDoc(doc(db, 'posProducts', product.id), {
           name: trimmedName,
-          price: numericPrice,
+          quantity: numericQuantity,
+          purchasePrice: numericPurchasePrice,
+          salePrice: numericSalePrice,
           updatedAt: serverTimestamp(),
         })
       } else {
         await addDoc(collection(db, 'posProducts'), {
           name: trimmedName,
-          price: numericPrice,
+          quantity: numericQuantity,
+          purchasePrice: numericPurchasePrice,
+          salePrice: numericSalePrice,
           createdAt: serverTimestamp(),
         })
       }
@@ -72,7 +113,7 @@ function ProductFormModal({ product, onClose, onToast }) {
       onToast?.({
         type: 'success',
         title: isEditing ? 'Producto actualizado' : 'Producto creado',
-        message: `${trimmedName} · ${formatPrice(numericPrice)}`,
+        message: `${trimmedName} · ${numericQuantity} unidades`,
       })
       onClose()
     } catch (saveError) {
@@ -88,14 +129,14 @@ function ProductFormModal({ product, onClose, onToast }) {
         className="booking-modal-card product-modal-card"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="product-form-title"
+        aria-labelledby="inventory-form-title"
         onClick={(event) => event.stopPropagation()}
         onSubmit={submit}
       >
         <div className="modal-header">
           <div>
-            <span className="modal-kicker">✦ CAJA · PRODUCTOS</span>
-            <h2 id="product-form-title" className="modal-title">
+            <span className="modal-kicker">✦ INVENTARIO · PRODUCTOS</span>
+            <h2 id="inventory-form-title" className="modal-title">
               {isEditing ? 'Editar producto' : 'Crear producto'}
             </h2>
           </div>
@@ -106,9 +147,9 @@ function ProductFormModal({ product, onClose, onToast }) {
 
         <div className="modal-body">
           <div className="field-group">
-            <label className="field-label" htmlFor="product-name">Nombre</label>
+            <label className="field-label" htmlFor="inventory-name">Nombre</label>
             <input
-              id="product-name"
+              id="inventory-name"
               className="modal-input"
               value={name}
               onChange={(event) => {
@@ -122,21 +163,61 @@ function ProductFormModal({ product, onClose, onToast }) {
             />
           </div>
 
+          <div className="inventory-form-row">
+            <div className="field-group">
+              <label className="field-label" htmlFor="inventory-quantity">Cantidad</label>
+              <input
+                id="inventory-quantity"
+                className="modal-input"
+                type="number"
+                inputMode="numeric"
+                min="0"
+                step="1"
+                value={quantity}
+                onChange={(event) => {
+                  setQuantity(event.target.value)
+                  if (error) setError('')
+                }}
+                placeholder="0"
+                required
+              />
+            </div>
+
+            <div className="field-group">
+              <label className="field-label" htmlFor="inventory-purchase-price">Precio compra (Bs)</label>
+              <input
+                id="inventory-purchase-price"
+                className="modal-input"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                value={purchasePrice}
+                onChange={(event) => {
+                  setPurchasePrice(event.target.value)
+                  if (error) setError('')
+                }}
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
           <div className="field-group">
-            <label className="field-label" htmlFor="product-price">Precio (Bs)</label>
+            <label className="field-label" htmlFor="inventory-sale-price">Precio venta (Bs)</label>
             <input
-              id="product-price"
+              id="inventory-sale-price"
               className="modal-input"
               type="number"
               inputMode="decimal"
               min="0.01"
               step="0.01"
-              value={price}
+              value={salePrice}
               onChange={(event) => {
-                setPrice(event.target.value)
+                setSalePrice(event.target.value)
                 if (error) setError('')
               }}
-              placeholder="Ej. 15.00"
+              placeholder="0.00"
               required
             />
           </div>
@@ -194,14 +275,14 @@ function SuperadminPasswordModal({ title, message, confirmLabel, onClose, onConf
         className="booking-modal-card product-modal-card"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="product-admin-title"
+        aria-labelledby="inventory-admin-title"
         onClick={(event) => event.stopPropagation()}
         onSubmit={submit}
       >
         <div className="modal-header">
           <div>
             <span className="modal-kicker">✦ ACCESO DE SUPERADMINISTRADOR</span>
-            <h2 id="product-admin-title" className="modal-title">{title}</h2>
+            <h2 id="inventory-admin-title" className="modal-title">{title}</h2>
           </div>
           <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Cerrar">
             <X size={20} />
@@ -215,11 +296,11 @@ function SuperadminPasswordModal({ title, message, confirmLabel, onClose, onConf
           </div>
 
           <div className="field-group">
-            <label className="field-label" htmlFor="product-admin-password">
+            <label className="field-label" htmlFor="inventory-admin-password">
               Contraseña de superadministrador
             </label>
             <input
-              id="product-admin-password"
+              id="inventory-admin-password"
               className="modal-input"
               type="password"
               autoComplete="off"
@@ -247,128 +328,76 @@ function SuperadminPasswordModal({ title, message, confirmLabel, onClose, onConf
   )
 }
 
-function PaymentModal({ product, onClose, onToast }) {
-  const [method, setMethod] = useState('')
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
-
-  const choose = (value) => {
-    setMethod(value)
-    onToast?.({
-      type: 'success',
-      title: 'Cobro registrado',
-      message: `${product.name} cobrado en ${value === 'qr' ? 'QR' : 'Efectivo'} por ${formatPrice(product.price)}.`,
-    })
-  }
+function ProductCard({ product, onEdit, onDelete }) {
+  const quantity = getQuantity(product)
+  const purchasePrice = getPurchasePrice(product)
+  const salePrice = getSalePrice(product)
+  const isLowStock = quantity <= LOW_STOCK_LIMIT
 
   return (
-    <div className="modal-backdrop" role="presentation" onClick={onClose}>
-      <div
-        className="booking-modal-card payment-modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="payment-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="modal-header">
-          <div>
-            <span className="modal-kicker">✦ CAJA · COBRAR</span>
-            <h2 id="payment-title" className="modal-title">Método de pago</h2>
-          </div>
-          <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Cerrar">
-            <X size={20} />
+    <article className={`inv-card ${isLowStock ? 'low-stock-card' : ''}`}>
+      <div className="inv-top">
+        <div>
+          <span className="inv-category">PRODUCTO</span>
+          <h3 className="inv-name">{product.name}</h3>
+        </div>
+        <span className={`inv-status-tag ${isLowStock ? 'status-critical' : 'status-good'}`}>
+          {isLowStock ? 'Stock bajo' : 'Disponible'}
+        </span>
+      </div>
+
+      <div className="inv-stock-level">
+        <span className="stock-hint">Cantidad en stock</span>
+        <div className="stock-number-row">
+          <strong className="stock-big-num">{quantity}</strong>
+          <span className="stock-unit-label">{quantity === 1 ? 'unidad' : 'unidades'}</span>
+        </div>
+      </div>
+
+      <div className="inv-prices">
+        <div className="inv-price-row">
+          <span>Precio compra</span>
+          <strong>{formatPrice(purchasePrice)}</strong>
+        </div>
+        <div className="inv-price-row">
+          <span>Precio venta</span>
+          <strong className="inv-sale-price">{formatPrice(salePrice)}</strong>
+        </div>
+      </div>
+
+      <div className="inv-actions">
+        <span className="stock-hint">Editar o eliminar con contraseña</span>
+        <div className="inv-action-buttons">
+          <button
+            type="button"
+            className="pos-product-tool-btn"
+            onClick={() => onEdit(product)}
+            aria-label={`Editar ${product.name}`}
+            title="Editar producto"
+          >
+            <Pencil size={15} />
+          </button>
+          <button
+            type="button"
+            className="pos-product-tool-btn danger"
+            onClick={() => onDelete(product)}
+            aria-label={`Eliminar ${product.name}`}
+            title="Eliminar producto"
+          >
+            <Trash2 size={15} />
           </button>
         </div>
-
-        <div className="modal-body">
-          <div className="payment-product-summary">
-            <span>PRODUCTO</span>
-            <strong>{product.name}</strong>
-            <p className="payment-price">{formatPrice(product.price)}</p>
-          </div>
-
-          {method ? (
-            <div className="payment-success">
-              <CheckCircle2 size={36} />
-              <strong>Pago con {method === 'qr' ? 'QR' : 'Efectivo'} registrado</strong>
-              <p>{product.name} · {formatPrice(product.price)}</p>
-              <button className="submit-booking-btn" type="button" onClick={onClose}>
-                <CheckCircle2 size={17} />
-                <span>Listo</span>
-              </button>
-            </div>
-          ) : (
-            <div className="payment-options">
-              <button className="payment-option qr" type="button" onClick={() => choose('qr')}>
-                <QrCode size={34} />
-                <span>QR</span>
-                <small>Pago digital</small>
-              </button>
-              <button className="payment-option cash" type="button" onClick={() => choose('cash')}>
-                <Banknote size={34} />
-                <span>Efectivo</span>
-                <small>Pago en mano</small>
-              </button>
-            </div>
-          )}
-        </div>
       </div>
-    </div>
-  )
-}
-
-function ProductCard({ product, onOpen, onEdit, onDelete }) {
-  return (
-    <article className="pos-product-card">
-      <div className="pos-product-tools">
-        <button
-          type="button"
-          className="pos-product-tool-btn"
-          onClick={() => onEdit(product)}
-          aria-label={`Editar ${product.name}`}
-          title="Editar producto"
-        >
-          <Pencil size={15} />
-        </button>
-        <button
-          type="button"
-          className="pos-product-tool-btn danger"
-          onClick={() => onDelete(product)}
-          aria-label={`Eliminar ${product.name}`}
-          title="Eliminar producto"
-        >
-          <Trash2 size={15} />
-        </button>
-      </div>
-
-      <button
-        type="button"
-        className="pos-product-open"
-        onClick={() => onOpen(product)}
-        aria-label={`Cobrar ${product.name} por ${formatPrice(product.price)}`}
-      >
-        <span className="pos-product-badge">PRODUCTO</span>
-        <span className="pos-product-name">{product.name}</span>
-        <span className="pos-product-price">{formatPrice(product.price)}</span>
-        <span className="pos-product-hint">Toca para cobrar</span>
-      </button>
     </article>
   )
 }
 
-export default function CajaModule({ onToast }) {
+export default function InventarioModule({ onToast }) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  const [selectedProduct, setSelectedProduct] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
 
   useEffect(() => {
@@ -395,6 +424,7 @@ export default function CajaModule({ onToast }) {
   }, [])
 
   const actionProduct = pendingAction?.product
+  const lowStockCount = products.filter((product) => getQuantity(product) <= LOW_STOCK_LIMIT).length
 
   const deleteProduct = async (product) => {
     await deleteDoc(doc(db, 'posProducts', product.id))
@@ -402,7 +432,7 @@ export default function CajaModule({ onToast }) {
     onToast?.({
       type: 'success',
       title: 'Producto eliminado',
-      message: `${product.name} se eliminó de la caja.`,
+      message: `${product.name} se eliminó del inventario.`,
     })
   }
 
@@ -415,33 +445,33 @@ export default function CajaModule({ onToast }) {
     <section className="dashboard-module">
       <div className="dashboard-page-heading">
         <div>
-          <span className="dashboard-eyebrow">CAJA · COBRO DE PRODUCTOS</span>
-          <h1>Caja POS</h1>
-          <p>Crea productos, edítalos y cobra con QR o efectivo.</p>
+          <span className="dashboard-eyebrow">INVENTARIO · STOCK & PRECIOS</span>
+          <h1>Inventario</h1>
+          <p>Crea productos con cantidad, precio de compra y precio de venta.</p>
         </div>
         <span className="dashboard-total">
-          <ShoppingBag size={18} /> {products.length} {products.length === 1 ? 'producto' : 'productos'}
+          <Package size={18} /> {products.length} {products.length === 1 ? 'producto' : 'productos'}
+          {lowStockCount > 0 ? ` · ${lowStockCount} con stock bajo` : ''}
         </span>
       </div>
 
       {loading ? (
-        <p className="registration-loading">Cargando productos…</p>
+        <p className="registration-loading">Cargando inventario…</p>
       ) : error ? (
         <p className="registration-error">{error}</p>
       ) : (
         <>
-          <div className="pos-products-grid">
+          <div className="inventory-grid">
             <button type="button" className="pos-create-card" onClick={() => setCreating(true)}>
               <span className="pos-create-icon"><Plus size={24} /></span>
               <strong>Crear producto</strong>
-              <span>Agrega nombre y precio</span>
+              <span>Nombre, cantidad y precios</span>
             </button>
 
             {products.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
-                onOpen={setSelectedProduct}
                 onEdit={(item) => setPendingAction({ type: 'edit', product: item })}
                 onDelete={(item) => setPendingAction({ type: 'delete', product: item })}
               />
@@ -449,7 +479,7 @@ export default function CajaModule({ onToast }) {
           </div>
 
           {products.length === 0 && (
-            <p className="pos-empty-note">Aún no hay productos. Crea el primero para empezar a cobrar.</p>
+            <p className="pos-empty-note">Aún no hay productos. Crea el primero para empezar a controlar el stock.</p>
           )}
         </>
       )}
@@ -462,14 +492,6 @@ export default function CajaModule({ onToast }) {
         <ProductFormModal
           product={editingProduct}
           onClose={() => setEditingProduct(null)}
-          onToast={onToast}
-        />
-      )}
-
-      {selectedProduct && (
-        <PaymentModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
           onToast={onToast}
         />
       )}

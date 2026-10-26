@@ -5176,14 +5176,8 @@ code {
 }
 
 /* ==========================================================================
-   CAJA · PRODUCTOS & COBRO
+   INVENTARIO · PRODUCTOS
    ========================================================================== */
-.pos-products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-}
-
 .pos-create-card {
   min-height: 190px;
   padding: 22px;
@@ -5231,81 +5225,6 @@ code {
   font-size: 12px;
 }
 
-.pos-product-card {
-  position: relative;
-  min-width: 0;
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  background: rgba(20, 11, 15, 0.78);
-  transition: all var(--duration-fast);
-}
-
-.pos-product-card:hover {
-  border-color: var(--border-crimson);
-  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.8), 0 0 22px rgba(255, 23, 68, 0.15);
-  transform: translateY(-2px);
-}
-
-.pos-product-open {
-  width: 100%;
-  min-height: 190px;
-  padding: 48px 18px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  border-radius: inherit;
-  background: transparent;
-  color: inherit;
-  text-align: left;
-  transition: background var(--duration-fast);
-}
-
-.pos-product-open:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.pos-product-open:active {
-  transform: scale(0.985);
-}
-
-.pos-product-badge {
-  color: var(--text-faint);
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-}
-
-.pos-product-name {
-  flex: 1;
-  color: var(--text-pure);
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
-.pos-product-price {
-  color: var(--crimson-glow);
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.pos-product-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-.pos-product-tools {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
-  display: flex;
-  gap: 6px;
-}
-
 .pos-product-tool-btn {
   width: 34px;
   height: 34px;
@@ -5344,143 +5263,66 @@ code {
   max-width: 460px;
 }
 
-.payment-modal-card {
-  max-width: 520px;
+.inventory-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.payment-product-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  background: var(--bg-surface-2);
-  text-align: center;
+.inventory-grid {
+  align-items: stretch;
 }
 
-.payment-product-summary > span {
-  color: var(--text-faint);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+.inv-card {
+  min-width: 0;
 }
 
-.payment-product-summary strong {
-  color: var(--text-pure);
-  font-size: 18px;
+.inv-name {
   overflow-wrap: anywhere;
 }
 
-.payment-price {
-  color: var(--crimson-glow);
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 800;
-}
-
-.payment-options {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.payment-option {
-  min-height: 150px;
-  padding: 18px 14px;
+.inv-prices {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 10px 12px;
   border: 1px solid var(--border-subtle);
-  border-radius: 14px;
+  border-radius: 10px;
   background: var(--bg-surface-2);
-  color: var(--text-pure);
-  font-size: 16px;
-  font-weight: 800;
-  transition: all var(--duration-fast);
 }
 
-.payment-option small {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.payment-option.qr {
-  border-color: rgba(0, 217, 255, 0.35);
-  background: rgba(0, 217, 255, 0.08);
-  color: #9beaff;
-}
-
-.payment-option.qr:hover {
-  border-color: var(--cyan-glow);
-  background: rgba(0, 217, 255, 0.16);
-  box-shadow: 0 8px 22px -10px rgba(0, 217, 255, 0.5);
-  transform: translateY(-2px);
-}
-
-.payment-option.cash {
-  border-color: rgba(16, 185, 129, 0.35);
-  background: rgba(16, 185, 129, 0.08);
-  color: #7bf0c4;
-}
-
-.payment-option.cash:hover {
-  border-color: var(--emerald-glow);
-  background: rgba(16, 185, 129, 0.16);
-  box-shadow: 0 8px 22px -10px rgba(16, 185, 129, 0.5);
-  transform: translateY(-2px);
-}
-
-.payment-option:active {
-  transform: scale(0.97);
-}
-
-.payment-success {
+.inv-price-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  text-align: center;
-}
-
-.payment-success > svg {
-  color: var(--emerald-glow);
-}
-
-.payment-success strong {
-  color: var(--text-pure);
-  font-size: 16px;
-}
-
-.payment-success p {
+  justify-content: space-between;
+  gap: 12px;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
-.payment-success .submit-booking-btn {
-  width: 100%;
-  margin-top: 8px;
+.inv-price-row strong {
+  color: var(--text-pure);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.inv-price-row strong.inv-sale-price {
+  color: var(--crimson-glow);
+}
+
+.inv-action-buttons {
+  display: flex;
+  gap: 6px;
 }
 
 @media (max-width: 640px) {
-  .pos-products-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pos-create-card,
-  .pos-product-open {
+  .pos-create-card {
     min-height: 160px;
   }
 
-  .payment-options {
+  .inventory-form-row {
     grid-template-columns: 1fr;
-  }
-
-  .payment-option {
-    min-height: 110px;
   }
 }

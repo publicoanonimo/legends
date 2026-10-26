@@ -333,6 +333,7 @@ function ProductCard({ product, onEdit, onDelete }) {
   const purchasePrice = getPurchasePrice(product)
   const salePrice = getSalePrice(product)
   const isLowStock = quantity <= LOW_STOCK_LIMIT
+  const isOutOfStock = quantity === 0
 
   return (
     <article className={`inv-card ${isLowStock ? 'low-stock-card' : ''}`}>
@@ -342,7 +343,7 @@ function ProductCard({ product, onEdit, onDelete }) {
           <h3 className="inv-name">{product.name}</h3>
         </div>
         <span className={`inv-status-tag ${isLowStock ? 'status-critical' : 'status-good'}`}>
-          {isLowStock ? 'Stock bajo' : 'Disponible'}
+          {isOutOfStock ? 'Agotado' : isLowStock ? 'Stock bajo' : 'Disponible'}
         </span>
       </div>
 

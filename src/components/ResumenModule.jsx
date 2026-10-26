@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { Banknote, ChartBar, Repeat } from 'lucide-react'
+import { Banknote, ChartBar, Repeat, ReceiptText } from 'lucide-react'
 import { db } from '../firebase'
 
 function formatPrice(value) {
@@ -21,6 +21,7 @@ export default function ResumenModule() {
   const [productCount, setProductCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [sales, setSales] = useState([])
 
   useEffect(() => {
     const productsQuery = query(
@@ -61,6 +62,13 @@ export default function ResumenModule() {
     return unsubscribe
   }, [])
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(query(collection(db, 'posSales'), orderBy('createdAt', 'desc')), (snapshot) => {
+      setSales(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })))
+    }, (snapshotError) => console.error('No se pudieron cargar las ventas:', snapshotError))
+    return unsubscribe
+  }, [])
+
   return (
     <section className="dashboard-module">
       <div className="dashboard-page-heading">
@@ -79,6 +87,7 @@ export default function ResumenModule() {
       ) : error ? (
         <p className="registration-error">{error}</p>
       ) : (
+        <>
         <div className="dashboard-tiles">
           <article className="dashboard-tile purchase-tile">
             <div className="dashboard-tile-icon">
@@ -100,6 +109,11 @@ export default function ResumenModule() {
             </div>
           </article>
         </div>
+        <section className="sales-history-card light-card">
+          <div className="sales-history-heading"><div><span className="dashboard-eyebrow">REGISTRO DE CAJA</span><h2><ReceiptText size={19} /> Ventas recientes</h2></div><span>{sales.length} {sales.length === 1 ? 'venta' : 'ventas'}</span></div>
+          {sales.length === 0 ? <p className="pos-empty-note">Las ventas que registres en Caja POS aparecerán aquí.</p> : <ul className="sales-history-list">{sales.slice(0, 20).map((sale) => <li key={sale.id}><div><strong>{sale.buyer}</strong><span>{(sale.products || []).map((item) => `${item.quantity}× ${item.name} (${formatPrice(item.price)})`).join(' · ')}</span><small>{sale.paymentMethod}</small></div><b>{formatPrice(sale.total)}</b></li>)}</ul>}
+        </section>
+        </>
       )}
     </section>
   )

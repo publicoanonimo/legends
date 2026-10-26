@@ -35,11 +35,13 @@ export default function ResumenModule() {
 
         snapshot.forEach((document) => {
           const data = document.data()
+          const quantity = Number(data.quantity)
+          const units = Number.isFinite(quantity) && quantity > 0 ? quantity : 0
           const purchase = Number(data.purchasePrice ?? 0)
           const sale = Number(data.salePrice ?? data.price ?? 0)
 
-          if (Number.isFinite(purchase) && purchase > 0) purchaseTotal += purchase
-          if (Number.isFinite(sale) && sale > 0) saleTotal += sale
+          if (Number.isFinite(purchase) && purchase > 0) purchaseTotal += purchase * units
+          if (Number.isFinite(sale) && sale > 0) saleTotal += sale * units
         })
 
         setTotalPurchase(purchaseTotal)
@@ -64,7 +66,7 @@ export default function ResumenModule() {
         <div>
           <span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span>
           <h1>Dashboard</h1>
-          <p>Totales de precio compra y precio venta calculados desde el inventario.</p>
+          <p>Valor total del inventario: precio de cada producto multiplicado por sus unidades.</p>
         </div>
         <span className="dashboard-total">
           <ChartBar size={18} /> {productCount} {productCount === 1 ? 'producto' : 'productos'}
@@ -84,7 +86,7 @@ export default function ResumenModule() {
             <div className="dashboard-tile-content">
               <strong>Precio compra</strong>
               <p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p>
-              <span>Suma de todos los precios de compra del inventario</span>
+              <span>Suma de precio compra × unidades de cada producto</span>
             </div>
           </article>
 
@@ -95,7 +97,7 @@ export default function ResumenModule() {
             <div className="dashboard-tile-content">
               <strong>Precio venta</strong>
               <p className="dashboard-tile-total">{formatPrice(totalSale)}</p>
-              <span>Suma de todos los precios de venta del inventario</span>
+              <span>Suma de precio venta × unidades de cada producto</span>
             </div>
           </article>
         </div>

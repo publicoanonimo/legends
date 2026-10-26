@@ -5436,12 +5436,6 @@ code {
   color: var(--emerald-glow);
 }
 
-.dashboard-tile-content > span {
-  color: var(--text-faint);
-  font-size: 12px;
-  line-height: 1.4;
-}
-
 @media (max-width: 640px) {
   .dashboard-tile {
     gap: 14px;
@@ -5456,9 +5450,5 @@ code {
 
   .dashboard-tile-total {
     font-size: 28px;
-  }
-
-  .dashboard-tile-content > span {
-    font-size: 11px;
   }
 }

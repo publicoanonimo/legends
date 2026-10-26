@@ -10,7 +10,8 @@ function formatPrice(value) {
   return new Intl.NumberFormat('es-BO', {
     style: 'currency',
     currency: 'BOB',
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(price)
 }
 
@@ -84,9 +85,8 @@ export default function ResumenModule() {
               <Banknote size={34} />
             </div>
             <div className="dashboard-tile-content">
-              <strong>Precio compra</strong>
+              <strong>Total compra productos</strong>
               <p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p>
-              <span>Suma de precio compra × unidades de cada producto</span>
             </div>
           </article>
 
@@ -95,9 +95,8 @@ export default function ResumenModule() {
               <Repeat size={34} />
             </div>
             <div className="dashboard-tile-content">
-              <strong>Precio venta</strong>
+              <strong>Total venta producto</strong>
               <p className="dashboard-tile-total">{formatPrice(totalSale)}</p>
-              <span>Suma de precio venta × unidades de cada producto</span>
             </div>
           </article>
         </div>

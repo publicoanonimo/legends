@@ -8,6 +8,11 @@ service cloud.firestore {
       allow update, delete: if true;
     }
 
+    match /posProducts/{productId} {
+      allow read, create: if true;
+      allow update, delete: if true;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

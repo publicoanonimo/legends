@@ -20,6 +20,7 @@ const CostumeModal = lazy(() => import('./components/CostumeModal'))
 const DateModal = lazy(() => import('./components/DateModal'))
 const LoginModal = lazy(() => import('./components/LoginModal'))
 const DashboardModule = lazy(() => import('./components/DashboardModule'))
+const CajaModule = lazy(() => import('./components/CajaModule'))
 
 // Sound utility
 import { playClickSound } from './utils/sound'
@@ -246,6 +247,12 @@ export default function App() {
           {active === 'dashboard' && (
             <Suspense fallback={<p className="registration-loading">Cargando panel…</p>}>
               <DashboardModule />
+            </Suspense>
+          )}
+
+          {active === 'caja' && (
+            <Suspense fallback={<p className="registration-loading">Cargando caja…</p>}>
+              <CajaModule onToast={showToast} />
             </Suspense>
           )}
 

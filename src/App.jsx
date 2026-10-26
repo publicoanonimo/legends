@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import {
-  Home, ClipboardList, Banknote, Package, Menu, X, Ticket, Calendar,
+  Home, LayoutDashboard, ClipboardList, Banknote, Package, Menu, X, Ticket, Calendar,
   ChevronRight, UserRound, LogOut
 } from 'lucide-react'
 
@@ -20,6 +20,7 @@ const CostumeModal = lazy(() => import('./components/CostumeModal'))
 const DateModal = lazy(() => import('./components/DateModal'))
 const LoginModal = lazy(() => import('./components/LoginModal'))
 const DashboardModule = lazy(() => import('./components/DashboardModule'))
+const ResumenModule = lazy(() => import('./components/ResumenModule'))
 const InventarioModule = lazy(() => import('./components/InventarioModule'))
 
 // Sound utility
@@ -27,6 +28,7 @@ import { playClickSound } from './utils/sound'
 
 const modules = [
   { id: 'inicio', label: 'Inicio', icon: Home, desc: 'Evento & Preventa' },
+  { id: 'resumen', label: 'Dashboard', icon: LayoutDashboard, desc: 'Resumen de precios' },
   { id: 'dashboard', label: 'Inscritos', icon: ClipboardList, desc: 'Registro personal y grupal' },
   { id: 'caja', label: 'Caja POS', icon: Banknote, desc: 'Cobro de Puerta' },
   { id: 'inventario', label: 'Inventario', icon: Package, desc: 'Stock & Barra' },
@@ -78,7 +80,7 @@ export default function App() {
     }
     if (credentials[username] !== password) return false
     setIsAdmin(true)
-    setActive('dashboard')
+    setActive('resumen')
     setSidebarOpen(window.innerWidth >= 1024)
     setLoginOpen(false)
     return true
@@ -242,6 +244,12 @@ export default function App() {
               <StaffSection />
               <FooterSection />
             </div>
+          )}
+
+          {active === 'resumen' && (
+            <Suspense fallback={<p className="registration-loading">Cargando resumen…</p>}>
+              <ResumenModule />
+            </Suspense>
           )}
 
           {active === 'dashboard' && (

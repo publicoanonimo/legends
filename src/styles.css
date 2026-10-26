@@ -5355,3 +5355,110 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   DASHBOARD · RESUMEN DE PRECIOS
+   ========================================================================== */
+.dashboard-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+}
+
+.dashboard-tile {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 30px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  background: rgba(20, 11, 15, 0.78);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  transition: all var(--duration-fast);
+}
+
+.dashboard-tile:hover {
+  border-color: var(--border-crimson);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.dashboard-tile-icon {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+}
+
+.purchase-tile .dashboard-tile-icon {
+  border: 1px solid rgba(255, 179, 0, 0.3);
+  background: rgba(255, 179, 0, 0.14);
+  color: var(--gold-glow);
+}
+
+.sale-tile .dashboard-tile-icon {
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--emerald-glow);
+}
+
+.dashboard-tile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dashboard-tile-content strong {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-tile-total {
+  color: var(--text-pure);
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.purchase-tile .dashboard-tile-total {
+  color: var(--gold-glow);
+}
+
+.sale-tile .dashboard-tile-total {
+  color: var(--emerald-glow);
+}
+
+.dashboard-tile-content > span {
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .dashboard-tile {
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .dashboard-tile-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+  }
+
+  .dashboard-tile-total {
+    font-size: 28px;
+  }
+
+  .dashboard-tile-content > span {
+    font-size: 11px;
+  }
+}

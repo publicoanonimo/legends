@@ -2941,11 +2941,20 @@ code {
   transition: all var(--duration-fast);
 }
 
-.costume-type-option:hover,
-.costume-type-option.selected {
+.costume-type-option:hover {
   border-color: var(--crimson-glow);
   background: rgba(255, 23, 68, 0.12);
   color: var(--text-pure);
+}
+
+.costume-type-option.selected,
+.costume-type-option.selected:hover,
+.costume-type-option.selected:focus-visible,
+.costume-type-option:active {
+  border-color: var(--crimson-glow);
+  background: var(--crimson-glow);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 23, 68, 0.4);
 }
 
 .costume-registration-form {
@@ -2984,6 +2993,13 @@ code {
 .costume-field input::placeholder {
   color: var(--text-muted);
   opacity: 0.7;
+}
+
+.costume-register-btn,
+.costume-register-btn:hover,
+.costume-register-btn:active {
+  background: var(--crimson-glow);
+  color: #fff;
 }
 
 .costume-register-btn:disabled {
@@ -3543,7 +3559,7 @@ code {
 
 .registration-columns {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
   gap: 20px;
 }
 
@@ -3598,10 +3614,11 @@ code {
 
 .registration-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 16px;
-  padding: 15px 18px;
+  gap: 14px 16px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -3617,20 +3634,24 @@ code {
   gap: 3px;
 }
 
+.registration-item-main {
+  flex: 1 1 220px;
+}
+
 .registration-item-main strong {
-  overflow: hidden;
   color: var(--text-pure);
   font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .registration-item-main span {
-  overflow: hidden;
   color: var(--text-secondary);
   font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .registration-item-meta {
@@ -3638,14 +3659,25 @@ code {
   flex-shrink: 0;
 }
 
+.registration-item-meta span {
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .registration-item-meta time {
   color: var(--text-faint);
   font-size: 10px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .registration-item-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 14px;
   flex-shrink: 0;
 }
@@ -4899,6 +4931,15 @@ code {
 
   .registration-item-meta {
     align-items: flex-start;
+  }
+
+  .registration-item-main {
+    flex: 0 0 auto;
+  }
+
+  .registration-item-meta span,
+  .registration-item-meta time {
+    text-align: left;
   }
 
   .registration-item-actions {

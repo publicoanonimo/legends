@@ -5526,6 +5526,7 @@ code {
 .pos-pack-select:disabled { cursor: wait; }
 .pos-pack-select-hint { color: var(--text-faint); font-size: 11px; }
 .pos-create-pack-card { min-height: 220px; }
+.pos-pack-inventory-card .inv-prices { padding: 0; border: 0; background: transparent; }
 .pos-pack-actions { display: flex; gap: 7px; padding: 8px 10px; border-top: 1px solid var(--border-subtle); }
 .pos-pack-actions button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 7px; border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-muted); font-size: 11px; }
 .pos-pack-actions button:hover { color: var(--text-pure); border-color: var(--border-crimson); }

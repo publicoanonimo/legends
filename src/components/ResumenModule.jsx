@@ -44,7 +44,7 @@ export default function ResumenModule() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (snapshot) => {
-      let purchase = 0; let count = 0
+      let purchase = 0; let sale = 0; let count = 0
       const regularProducts = []
       const extraPurchases = []
       snapshot.forEach((item) => {
@@ -53,9 +53,12 @@ export default function ResumenModule() {
         if (data.recordType === 'purchase') { purchase += Number(data.amount) || 0; extraPurchases.push({ id: item.id, ...data }); return }
         count += 1
         regularProducts.push({ id: item.id, ...data })
+        const units = Math.max(0, Number(data.quantity) || 0)
+        purchase += (Number(data.purchasePrice) || 0) * units
+        sale += (Number(data.salePrice ?? data.price) || 0) * units
       })
       setInventoryProducts(regularProducts); setPurchaseEntries(extraPurchases)
-      setTotalPurchase(purchase); setProductCount(count); setLoading(false); setError('')
+      setTotalPurchase(purchase); setTotalSale(sale); setProductCount(count); setLoading(false); setError('')
     }, () => { setLoading(false); setError('No se pudieron cargar los productos. Revisa las reglas de Firestore.') })
     return unsubscribe
   }, [])
@@ -63,7 +66,6 @@ export default function ResumenModule() {
   useEffect(() => onSnapshot(query(collection(db, 'posSales'), orderBy('createdAt', 'desc')), (snapshot) => {
     const records = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))
     setSales(records)
-    setTotalSale(records.reduce((sum, sale) => sum + (Number(sale.total) || 0), 0))
   }, (snapshotError) => console.error('No se pudieron cargar las ventas:', snapshotError)), [])
 
   const qrTotal = sales.filter((sale) => sale.paymentMethod === 'QR').reduce((sum, sale) => sum + (Number(sale.total) || 0), 0)
@@ -174,7 +176,7 @@ export default function ResumenModule() {
         { label: 'Inversion total', value: reportMoney(totalPurchase), color: [0.72, 0.13, 0.18] },
       ],
       sections: [
-        { title: 'RESUMEN DE PRODUCTOS', rows: [`Productos registrados: ${productCount}`, `Ventas acumuladas de productos: ${reportMoney(totalSale)}`] },
+        { title: 'RESUMEN DE PRODUCTOS', rows: [`Productos registrados: ${productCount}`, `Valor de venta del inventario actual: ${reportMoney(totalSale)}`] },
         { title: 'DETALLE DE PRODUCTOS', rows: inventoryProducts.map((product) => `${product.name} | Stock: ${Number(product.quantity) || 0} | Compra/u: ${reportMoney(product.purchasePrice)} | Venta/u: ${reportMoney(product.salePrice ?? product.price)} | Inversion en stock: ${reportMoney((Number(product.purchasePrice) || 0) * (Number(product.quantity) || 0))}`) },
         { title: 'COMPRAS ADICIONALES', rows: purchaseEntries.map((entry) => `${dateLabel(entry.createdAt)} | ${entry.label || 'Compra adicional'} | Monto: ${reportMoney(entry.amount)}`) },
         { title: 'REGISTRO DE VENTAS', rows: sales.flatMap((sale) => [

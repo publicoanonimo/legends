@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "THE LEGENDS · Paranormal Fest",
+  "short_name": "THE LEGENDS",
+  "description": "Acceso al panel de organización de THE LEGENDS.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#10090d",
+  "theme_color": "#641c2a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

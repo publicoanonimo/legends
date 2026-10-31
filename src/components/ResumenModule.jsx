@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { Banknote, ChartBar, Repeat, ReceiptText, Pencil, Trash2, Check, X } from 'lucide-react'
 import { db } from '../firebase'
 
@@ -27,9 +27,9 @@ export default function ResumenModule() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (snapshot) => {
-      let purchase = 0; let sale = 0
-      snapshot.forEach((item) => { const data = item.data(); const units = Math.max(0, Number(data.quantity) || 0); purchase += (Number(data.purchasePrice) || 0) * units; sale += (Number(data.salePrice ?? data.price) || 0) * units })
-      setTotalPurchase(purchase); setTotalSale(sale); setProductCount(snapshot.size); setLoading(false); setError('')
+      let purchase = 0; let sale = 0; let count = 0
+      snapshot.forEach((item) => { const data = item.data(); if (data.recordType === 'pack') return; count += 1; const units = Math.max(0, Number(data.quantity) || 0); purchase += (Number(data.purchasePrice) || 0) * units; sale += (Number(data.salePrice ?? data.price) || 0) * units })
+      setTotalPurchase(purchase); setTotalSale(sale); setProductCount(count); setLoading(false); setError('')
     }, () => { setLoading(false); setError('No se pudieron cargar los productos. Revisa las reglas de Firestore.') })
     return unsubscribe
   }, [])
@@ -49,23 +49,27 @@ export default function ResumenModule() {
     if (!sale) return
     setDeleting(true); setActionError('')
     try {
+      // Firestore's web transaction API only reads document references, not collections.
+      // Resolve legacy product names before the transaction, then verify each product doc in it.
+      const [catalog, packSnapshot] = await Promise.all([
+        getDocs(collection(db, 'posProducts')),
+        sale.packId ? getDoc(doc(db, 'posProducts', sale.packId)) : Promise.resolve(null),
+      ])
+      const byName = new Map()
+      catalog.docs.filter((product) => product.data().recordType !== 'pack').forEach((product) => {
+        const name = product.data().name
+        byName.set(name, [...(byName.get(name) || []), product.id])
+      })
       await runTransaction(db, async (transaction) => {
         const saleRef = doc(db, 'posSales', sale.id)
         const currentSale = await transaction.get(saleRef)
         if (!currentSale.exists()) throw new Error('La venta ya no existe.')
         let products = currentSale.data().products || []
         if (products.some((item) => !item.id) && currentSale.data().packId) {
-          const packSnapshot = await transaction.get(doc(db, 'posPacks', currentSale.data().packId))
           if (packSnapshot.exists()) products = packSnapshot.data().products || products
         }
         let inventoryItems = products.filter((item) => item.id && Number(item.quantity) > 0)
         if (products.some((item) => !item.id && Number(item.quantity) > 0)) {
-          const catalog = await transaction.get(collection(db, 'posProducts'))
-          const byName = new Map()
-          catalog.docs.forEach((product) => {
-            const name = product.data().name
-            byName.set(name, [...(byName.get(name) || []), product.id])
-          })
           const legacyItems = products.filter((item) => !item.id && Number(item.quantity) > 0).map((item) => {
             const matches = byName.get(item.name) || []
             if (matches.length !== 1) throw new Error(`No se pudo identificar unívocamente el producto "${item.name}"; no se borró la venta ni se cambió el inventario.`)
@@ -76,7 +80,8 @@ export default function ResumenModule() {
         const inventoryRefs = inventoryItems.map((item) => doc(db, 'posProducts', item.id))
         const inventorySnapshots = await Promise.all(inventoryRefs.map((ref) => transaction.get(ref)))
         inventorySnapshots.forEach((snapshot, index) => {
-          if (snapshot.exists()) transaction.update(snapshot.ref, { quantity: (Number(snapshot.data().quantity) || 0) + Number(inventoryItems[index].quantity), updatedAt: serverTimestamp() })
+          if (!snapshot.exists()) throw new Error(`El producto "${inventoryItems[index].name}" ya no está en inventario; no se borró la venta.`)
+          transaction.update(snapshot.ref, { quantity: (Number(snapshot.data().quantity) || 0) + Number(inventoryItems[index].quantity), updatedAt: serverTimestamp() })
         })
         transaction.delete(saleRef)
       })

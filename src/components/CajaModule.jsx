@@ -20,9 +20,12 @@ export default function CajaModule({ onToast }) {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    const unsubProducts = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (s) => setProducts(s.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setError('No se pudo cargar el inventario.'))
-    const unsubPacks = onSnapshot(query(collection(db, 'posPacks'), orderBy('createdAt', 'desc')), (s) => setPacks(s.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setError('No se pudieron cargar los packs.'))
-    return () => { unsubProducts(); unsubPacks() }
+    const unsubProducts = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (s) => {
+      const records = s.docs.map((d) => ({ id: d.id, ...d.data() }))
+      setProducts(records.filter((item) => item.recordType !== 'pack'))
+      setPacks(records.filter((item) => item.recordType === 'pack'))
+    }, () => setError('No se pudo cargar el inventario.'))
+    return unsubProducts
   }, [])
   const total = useMemo(() => selected.reduce((sum, p) => sum + Number(p.price || 0), 0), [selected])
   const toggleProduct = (product) => setSelected((current) => {
@@ -37,7 +40,7 @@ export default function CajaModule({ onToast }) {
     if (!selected.length) return setError('Selecciona al menos un producto.')
     setSaving(true)
     try {
-      await addDoc(collection(db, 'posPacks'), { name: packName.trim(), products: selected, total, createdAt: serverTimestamp() })
+      await addDoc(collection(db, 'posProducts'), { recordType: 'pack', name: packName.trim(), products: selected, total, salePrice: total, price: total, quantity: 0, createdAt: serverTimestamp() })
       setPackName(''); setSelected([]); setCreatorOpen(false); setError('')
       onToast?.({ type: 'success', title: 'Pack creado', message: `${money(total)} agregado al inventario disponible.` })
     } catch (saveError) { console.error('No se pudo guardar el pack:', saveError); setError(saveError.code === 'permission-denied' ? 'Firebase bloqueó el guardado del pack. Publica las reglas actualizadas de Firestore.' : `No se pudo guardar el pack: ${saveError.message || 'error desconocido'}`) } finally { setSaving(false) }

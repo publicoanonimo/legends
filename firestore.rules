@@ -14,10 +14,6 @@ service cloud.firestore {
     }
 
     match /posSales/{saleId} {
-      allow read, create, update, delete: if true;
-    }
-
-    match /posPacks/{packId} {
       allow read, create: if true;
     }
 

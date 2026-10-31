@@ -410,7 +410,7 @@ export default function InventarioModule({ onToast }) {
     const unsubscribe = onSnapshot(
       productsQuery,
       (snapshot) => {
-        setProducts(snapshot.docs.map((document) => ({ id: document.id, ...document.data() })))
+        setProducts(snapshot.docs.map((document) => ({ id: document.id, ...document.data() })).filter((product) => product.recordType !== 'pack'))
         setLoading(false)
         setError('')
       },

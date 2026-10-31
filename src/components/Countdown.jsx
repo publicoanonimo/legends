@@ -1,49 +1,35 @@
 import { useState, useEffect } from 'react'
 import { Clock } from 'lucide-react'
 
-export default function Countdown() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
+function getCountdown() {
+  const now = new Date()
+  const getEventDate = (year) => {
+    // El evento es el último viernes de octubre a las 17:00, hora local.
+    const lastDay = new Date(year, 10, 0)
+    const daysAfterFriday = (lastDay.getDay() - 5 + 7) % 7
+    return new Date(year, 9, lastDay.getDate() - daysAfterFriday, 17, 0, 0)
+  }
+
+  let target = getEventDate(now.getFullYear())
+  if (now.getTime() >= target.getTime()) target = getEventDate(now.getFullYear() + 1)
+
+  const difference = target.getTime() - now.getTime()
+  if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / (1000 * 60)) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
     isExpired: false,
-  })
+  }
+}
+
+export default function Countdown() {
+  const [timeLeft, setTimeLeft] = useState(getCountdown)
 
   useEffect(() => {
-    // The event starts at 17:00 on the last Friday of October.
-    const now = new Date()
-    let currentYear = now.getFullYear()
-    const getEventDate = (year) => {
-      const lastDay = new Date(year, 10, 0)
-      const daysAfterFriday = (lastDay.getDay() - 5 + 7) % 7
-      return new Date(year, 9, lastDay.getDate() - daysAfterFriday, 17, 0, 0)
-    }
-    let target = getEventDate(currentYear)
-
-    // If past, target next year
-    if (now.getTime() > target.getTime()) {
-      target = getEventDate(currentYear + 1)
-    }
-
-    const updateCountdown = () => {
-      const difference = target.getTime() - new Date().getTime()
-
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true })
-        return
-      }
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24)
-      const minutes = Math.floor((difference / 1000 / 60) % 60)
-      const seconds = Math.floor((difference / 1000) % 60)
-
-      setTimeLeft({ days, hours, minutes, seconds, isExpired: false })
-    }
-
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 1000)
+    const interval = setInterval(() => setTimeLeft(getCountdown()), 1000)
     return () => clearInterval(interval)
   }, [])
 

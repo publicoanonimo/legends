@@ -5490,6 +5490,24 @@ code {
   color: var(--emerald-glow);
 }
 
+.progress-tile .dashboard-tile-total { color: var(--violet-glow); }
+.create-pack-card { border-style: dashed; border-color: var(--border-crimson); color: var(--crimson-glow); align-items: center; text-align: center; }
+.create-pack-card strong { color: var(--crimson-glow); }
+.pack-modal { max-width: 720px; max-height: 90vh; overflow: auto; }
+.pack-modal-body { padding: 0 24px 24px; }
+.pack-modal-body > .field-label { display: block; margin-bottom: 7px; }
+.pack-product-grid { max-height: 300px; overflow: auto; margin: 12px 0 18px; padding: 2px; }
+.pack-product-selected { border-color: var(--emerald-glow); box-shadow: inset 0 0 0 1px var(--emerald-glow); }
+.sales-history-list li { align-items: center; }
+.sales-row-main { display: grid; gap: 4px; min-width: 0; }
+.sales-row-actions { display: flex; align-items: center; gap: 7px; }
+.sales-row-actions b { color: var(--emerald-glow); white-space: nowrap; margin-right: 5px; }
+.sales-action-btn { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--border-subtle); border-radius: 7px; color: var(--text-muted); }
+.sales-action-btn:hover { color: var(--text-pure); border-color: var(--crimson-glow); }
+.sales-action-btn.delete:hover { color: var(--crimson-glow); }
+.sales-edit-input { max-width: 260px; padding: 7px 9px; }
+@media (max-width: 640px) { .sales-row-actions { width: 100%; } }
+
 @media (max-width: 640px) {
   .dashboard-tile {
     gap: 14px;

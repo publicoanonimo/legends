@@ -1,63 +1,66 @@
 import { useEffect, useMemo, useState } from 'react'
 import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore'
-import { Banknote, CreditCard, Minus, Plus, ShoppingBag, X } from 'lucide-react'
+import { Banknote, CreditCard, PackagePlus, Plus, ShoppingBag, X } from 'lucide-react'
 import { db } from '../firebase'
 
 const money = (value) => new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB', minimumFractionDigits: 2 }).format(Number(value) || 0)
 
 function PaymentModal({ total, onClose, onPay }) {
-  return <div className="modal-backdrop" onClick={onClose} role="presentation">
-    <div className="booking-modal-card payment-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title" onClick={(event) => event.stopPropagation()}>
-      <div className="modal-header"><div><span className="modal-kicker">✦ CONFIRMAR COBRO</span><h2 id="payment-title" className="modal-title">{money(total)}</h2></div><button className="modal-close-btn" onClick={onClose} aria-label="Cerrar"><X size={20} /></button></div>
-      <div className="payment-options"><button className="payment-option qr" onClick={() => onPay('QR')}><CreditCard size={28} /><strong>QR</strong><span>Pago digital</span></button><button className="payment-option cash" onClick={() => onPay('Efectivo')}><Banknote size={28} /><strong>Efectivo</strong><span>Pago en caja</span></button></div>
-    </div>
-  </div>
+  return <div className="modal-backdrop" onClick={onClose} role="presentation"><div className="booking-modal-card payment-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title" onClick={(event) => event.stopPropagation()}><div className="modal-header"><div><span className="modal-kicker">CONFIRMAR COBRO</span><h2 id="payment-title" className="modal-title">{money(total)}</h2></div><button className="modal-close-btn" onClick={onClose} aria-label="Cerrar"><X size={20} /></button></div><div className="payment-options"><button className="payment-option qr" onClick={() => onPay('QR')}><CreditCard size={28} /><strong>QR</strong><span>Pago digital</span></button><button className="payment-option cash" onClick={() => onPay('Efectivo')}><Banknote size={28} /><strong>Efectivo</strong><span>Pago en caja</span></button></div></div></div>
 }
 
 export default function CajaModule({ onToast }) {
   const [products, setProducts] = useState([])
-  const [cart, setCart] = useState([])
-  const [buyer, setBuyer] = useState('')
-  const [paymentOpen, setPaymentOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [packs, setPacks] = useState([])
+  const [packName, setPackName] = useState('')
+  const [selected, setSelected] = useState([])
+  const [creatorOpen, setCreatorOpen] = useState(false)
+  const [paymentPack, setPaymentPack] = useState(null)
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (snapshot) => setProducts(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))), (snapshotError) => setError('No se pudo cargar el inventario.'))
-    return unsubscribe
+    const unsubProducts = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (s) => setProducts(s.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setError('No se pudo cargar el inventario.'))
+    const unsubPacks = onSnapshot(query(collection(db, 'posPacks'), orderBy('createdAt', 'desc')), (s) => setPacks(s.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setError('No se pudieron cargar los packs.'))
+    return () => { unsubProducts(); unsubPacks() }
   }, [])
-  const total = useMemo(() => cart.reduce((sum, item) => sum + Number(item.salePrice || 0) * item.quantity, 0), [cart])
-  const addProduct = (product) => {
-    if (Number(product.quantity) <= 0) return onToast?.({ type: 'error', title: 'Sin stock', message: `${product.name} está agotado.` })
-    setCart((current) => {
-      const found = current.find((item) => item.id === product.id)
-      if (found) return current.map((item) => item.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, Number(product.quantity)) } : item)
-      if (current.length >= 3) { setError('Puedes seleccionar hasta 3 productos distintos por venta.'); return current }
-      setError(''); return [...current, { id: product.id, name: product.name, salePrice: Number(product.salePrice ?? product.price ?? 0), quantity: 1 }]
-    })
-  }
-  const changeCart = (id, changes) => setCart((current) => current.map((item) => item.id === id ? { ...item, ...changes } : item).filter((item) => item.quantity > 0))
-  const beginPayment = () => {
-    if (!buyer.trim()) return setError('Escribe el nombre de la venta o del cliente.')
-    if (!cart.length) return setError('Selecciona al menos un producto.')
-    if (cart.some((item) => !Number.isFinite(Number(item.salePrice)) || Number(item.salePrice) <= 0)) return setError('Cada producto debe tener un precio de venta válido.')
-    setError(''); setPaymentOpen(true)
+  const total = useMemo(() => selected.reduce((sum, p) => sum + Number(p.price || 0), 0), [selected])
+  const toggleProduct = (product) => setSelected((current) => {
+    const exists = current.find((item) => item.id === product.id)
+    if (exists) return current.filter((item) => item.id !== product.id)
+    if (Number(product.quantity) <= 0) { setError(`${product.name} no tiene stock.`); return current }
+    setError('')
+    return [...current, { id: product.id, name: product.name, price: Number(product.salePrice ?? product.price ?? 0) }]
+  })
+  const savePack = async () => {
+    if (!packName.trim()) return setError('Escribe el nombre del pack.')
+    if (!selected.length) return setError('Selecciona al menos un producto.')
+    setSaving(true)
+    try {
+      const { addDoc } = await import('firebase/firestore')
+      await addDoc(collection(db, 'posPacks'), { name: packName.trim(), products: selected, total, createdAt: serverTimestamp() })
+      setPackName(''); setSelected([]); setCreatorOpen(false); setError('')
+      onToast?.({ type: 'success', title: 'Pack creado', message: `${money(total)} agregado al inventario disponible.` })
+    } catch { setError('No se pudo guardar el pack.') } finally { setSaving(false) }
   }
   const completeSale = async (method) => {
     setSaving(true)
     try {
       await runTransaction(db, async (transaction) => {
-        const inventory = await Promise.all(cart.map((item) => transaction.get(doc(db, 'posProducts', item.id))))
-        inventory.forEach((snapshot, index) => { if (!snapshot.exists() || Number(snapshot.data().quantity) < cart[index].quantity) throw new Error(`Stock insuficiente para ${cart[index].name}.`) })
-        inventory.forEach((snapshot, index) => transaction.update(snapshot.ref, { quantity: Number(snapshot.data().quantity) - cart[index].quantity, updatedAt: serverTimestamp() }))
-        transaction.set(doc(collection(db, 'posSales')), { buyer: buyer.trim(), paymentMethod: method, products: cart.map((item) => ({ name: item.name, price: Number(item.salePrice), quantity: item.quantity })), total, createdAt: serverTimestamp() })
+        const refs = paymentPack.products.map((item) => doc(db, 'posProducts', item.id))
+        const snapshots = await Promise.all(refs.map((ref) => transaction.get(ref)))
+        snapshots.forEach((snapshot, index) => { if (!snapshot.exists() || Number(snapshot.data().quantity) < 1) throw new Error(`Stock insuficiente para ${paymentPack.products[index].name}.`) })
+        snapshots.forEach((snapshot) => transaction.update(snapshot.ref, { quantity: Number(snapshot.data().quantity) - 1, updatedAt: serverTimestamp() }))
+        transaction.set(doc(collection(db, 'posSales')), { buyer: paymentPack.name, paymentMethod: method, packId: paymentPack.id, products: paymentPack.products.map((item) => ({ name: item.name, price: Number(item.price), quantity: 1 })), total: Number(paymentPack.total), createdAt: serverTimestamp() })
       })
-      onToast?.({ type: 'success', title: 'Venta registrada', message: `${buyer.trim()} · ${money(total)} · ${method}` })
-      setCart([]); setBuyer(''); setPaymentOpen(false)
-    } catch (saleError) { setError(saleError.message || 'No se pudo guardar la venta.'); setPaymentOpen(false) } finally { setSaving(false) }
+      onToast?.({ type: 'success', title: 'Venta registrada', message: `${paymentPack.name} · ${money(paymentPack.total)} · ${method}` })
+      setPaymentPack(null)
+    } catch (saleError) { setError(saleError.message || 'No se pudo registrar la venta.'); setPaymentPack(null) } finally { setSaving(false) }
   }
-  return <section className="dashboard-module caja-module"><div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">CAJA POS · VENTAS</span><h1>Caja POS</h1><p>Selecciona hasta 3 productos. El stock se descuenta al confirmar el pago.</p></div><span className="dashboard-total"><ShoppingBag size={18} /> {cart.length}/3 productos</span></div>
-    <div className="pos-sale-layout"><section className="pos-products-panel light-card"><h2>Inventario disponible</h2><div className="pos-products-grid">{products.map((product) => <button type="button" className={`pos-product-card ${Number(product.quantity) <= 0 ? 'sold-out' : ''}`} key={product.id} onClick={() => addProduct(product)} disabled={Number(product.quantity) <= 0}><strong>{product.name}</strong><span>{money(product.salePrice ?? product.price)}</span><small>{Number(product.quantity)} unidades</small></button>)}</div>{products.length === 0 && <p className="pos-empty-note">Crea productos en Inventario para venderlos aquí.</p>}</section>
-      <section className="pos-cart-panel light-card"><h2>Venta actual</h2><label className="field-label" htmlFor="sale-buyer">Nombre de la venta / cliente</label><input id="sale-buyer" className="modal-input" value={buyer} onChange={(e) => setBuyer(e.target.value)} placeholder="Ej. Mesa 4 o nombre del cliente" maxLength={80}/><div className="cart-list">{cart.map((item) => <div className="cart-item" key={item.id}><div><strong>{item.name}</strong><label>Precio (Bs)<input type="number" min="0.01" step="0.01" value={item.salePrice} onChange={(e) => changeCart(item.id, { salePrice: e.target.value })}/></label></div><div className="cart-quantity"><button onClick={() => changeCart(item.id, { quantity: item.quantity - 1 })} aria-label="Restar"><Minus size={14}/></button><span>{item.quantity}</span><button onClick={() => changeCart(item.id, { quantity: item.quantity + 1 })} aria-label="Sumar"><Plus size={14}/></button></div></div>)}</div>{!cart.length && <p className="pos-empty-note">Toca una tarjeta de producto para agregarla.</p>}<div className="cart-total"><span>Total</span><strong>{money(total)}</strong></div>{error && <p className="login-error" role="alert">{error}</p>}<button className="submit-booking-btn pos-charge-btn" disabled={saving} onClick={beginPayment}><Banknote size={17}/><span>{saving ? 'Guardando…' : 'Cobrar venta'}</span></button></section></div>
-    {paymentOpen && <PaymentModal total={total} onClose={() => setPaymentOpen(false)} onPay={completeSale}/>}</section>
+
+  return <section className="dashboard-module caja-module"><div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">CAJA POS · VENTAS</span><h1>Caja POS</h1><p>Crea packs con productos del inventario y registra su cobro.</p></div><span className="dashboard-total"><ShoppingBag size={18} /> {packs.length} packs</span></div>
+    <section className="pos-products-panel light-card"><div className="sales-history-heading"><div><h2>Inventario disponible</h2></div></div><div className="pos-products-grid"><button type="button" className="pos-product-card create-pack-card" onClick={() => { setCreatorOpen(true); setError('') }}><PackagePlus size={28}/><strong>Crear pack</strong><small>Arma un pack de productos</small></button>{packs.map((pack) => <button type="button" className="pos-product-card" key={pack.id} onClick={() => setPaymentPack(pack)}><strong>{pack.name}</strong><span>{money(pack.total)}</span><small>{pack.products?.length || 0} productos · Toca para cobrar</small></button>)}</div>{!packs.length && <p className="pos-empty-note">Crea un pack para que aparezca aquí.</p>}</section>
+    {creatorOpen && <div className="modal-backdrop" onClick={() => setCreatorOpen(false)} role="presentation"><div className="booking-modal-card pack-modal" role="dialog" aria-modal="true" aria-labelledby="pack-title" onClick={(e) => e.stopPropagation()}><div className="modal-header"><div><span className="modal-kicker">NUEVO PACK</span><h2 id="pack-title" className="modal-title">Crear pack</h2></div><button className="modal-close-btn" onClick={() => setCreatorOpen(false)} aria-label="Cerrar"><X size={20}/></button></div><div className="pack-modal-body"><label className="field-label" htmlFor="pack-name">Nombre del pack</label><input id="pack-name" className="modal-input" value={packName} onChange={(e) => setPackName(e.target.value)} maxLength={80} placeholder="Ej. Pack de celebración"/><div className="cart-total"><span>Productos seleccionados</span><strong>{money(total)}</strong></div><div className="pos-products-grid pack-product-grid">{products.map((product) => { const chosen = selected.some((item) => item.id === product.id); return <button key={product.id} type="button" className={`pos-product-card ${chosen ? 'pack-product-selected' : ''} ${Number(product.quantity) <= 0 ? 'sold-out' : ''}`} onClick={() => toggleProduct(product)} disabled={Number(product.quantity) <= 0}><strong>{product.name}</strong><span>{money(product.salePrice ?? product.price)}</span><small>{chosen ? 'Agregado · toca para quitar' : `${Number(product.quantity)} unidades · toca para agregar`}</small></button> })}</div>{!products.length && <p className="pos-empty-note">Agrega productos en Inventario para armar packs.</p>}{error && <p className="login-error" role="alert">{error}</p>}<button className="submit-booking-btn pos-charge-btn" disabled={saving} onClick={savePack}><Plus size={17}/><span>{saving ? 'Guardando…' : 'Guardar pack'}</span></button></div></div></div>}
+    {paymentPack && <PaymentModal total={paymentPack.total} onClose={() => setPaymentPack(null)} onPay={completeSale}/>}{error && !creatorOpen && <p className="login-error" role="alert">{error}</p>}
+  </section>
 }

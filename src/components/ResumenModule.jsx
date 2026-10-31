@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { Banknote, ChartBar, Repeat, ReceiptText } from 'lucide-react'
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore'
+import { Banknote, ChartBar, Repeat, ReceiptText, Pencil, Trash2, Check, X } from 'lucide-react'
 import { db } from '../firebase'
 
 function formatPrice(value) {
   const price = Number(value)
-  if (!Number.isFinite(price)) return 'Bs 0,00'
-
-  return new Intl.NumberFormat('es-BO', {
-    style: 'currency',
-    currency: 'BOB',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price)
+  return new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number.isFinite(price) ? price : 0)
 }
 
 export default function ResumenModule() {
@@ -22,99 +15,28 @@ export default function ResumenModule() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [sales, setSales] = useState([])
+  const [editingId, setEditingId] = useState(null)
+  const [editBuyer, setEditBuyer] = useState('')
+  const [editTotal, setEditTotal] = useState('')
 
   useEffect(() => {
-    const productsQuery = query(
-      collection(db, 'posProducts'),
-      orderBy('createdAt', 'desc'),
-    )
-
-    const unsubscribe = onSnapshot(
-      productsQuery,
-      (snapshot) => {
-        let purchaseTotal = 0
-        let saleTotal = 0
-
-        snapshot.forEach((document) => {
-          const data = document.data()
-          const quantity = Number(data.quantity)
-          const units = Number.isFinite(quantity) && quantity > 0 ? quantity : 0
-          const purchase = Number(data.purchasePrice ?? 0)
-          const sale = Number(data.salePrice ?? data.price ?? 0)
-
-          if (Number.isFinite(purchase) && purchase > 0) purchaseTotal += purchase * units
-          if (Number.isFinite(sale) && sale > 0) saleTotal += sale * units
-        })
-
-        setTotalPurchase(purchaseTotal)
-        setTotalSale(saleTotal)
-        setProductCount(snapshot.size)
-        setLoading(false)
-        setError('')
-      },
-      (snapshotError) => {
-        console.error('No se pudieron cargar los productos:', snapshotError)
-        setLoading(false)
-        setError('No se pudieron cargar los productos. Revisa las reglas de Firestore.')
-      },
-    )
-
+    const unsubscribe = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (snapshot) => {
+      let purchase = 0; let sale = 0
+      snapshot.forEach((item) => { const data = item.data(); const units = Math.max(0, Number(data.quantity) || 0); purchase += (Number(data.purchasePrice) || 0) * units; sale += (Number(data.salePrice ?? data.price) || 0) * units })
+      setTotalPurchase(purchase); setTotalSale(sale); setProductCount(snapshot.size); setLoading(false); setError('')
+    }, () => { setLoading(false); setError('No se pudieron cargar los productos. Revisa las reglas de Firestore.') })
     return unsubscribe
   }, [])
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(query(collection(db, 'posSales'), orderBy('createdAt', 'desc')), (snapshot) => {
-      setSales(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })))
-    }, (snapshotError) => console.error('No se pudieron cargar las ventas:', snapshotError))
-    return unsubscribe
-  }, [])
+  useEffect(() => onSnapshot(query(collection(db, 'posSales'), orderBy('createdAt', 'desc')), (snapshot) => setSales(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))), (snapshotError) => console.error('No se pudieron cargar las ventas:', snapshotError)), [])
+  const progressTotal = sales.reduce((sum, sale) => sum + (Number(sale.total) || 0), 0)
+  const startEdit = (sale) => { setEditingId(sale.id); setEditBuyer(sale.buyer || ''); setEditTotal(String(sale.total || 0)) }
+  const saveEdit = async (sale) => { const total = Number(editTotal); if (!editBuyer.trim() || !Number.isFinite(total) || total < 0) return; await updateDoc(doc(db, 'posSales', sale.id), { buyer: editBuyer.trim(), total }); setEditingId(null) }
+  const removeSale = async (sale) => { if (window.confirm(`¿Eliminar el registro de ${sale.buyer || 'esta venta'}?`)) await deleteDoc(doc(db, 'posSales', sale.id)) }
 
-  return (
-    <section className="dashboard-module">
-      <div className="dashboard-page-heading">
-        <div>
-          <span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span>
-          <h1>Dashboard</h1>
-          <p>Valor total del inventario: precio de cada producto multiplicado por sus unidades.</p>
-        </div>
-        <span className="dashboard-total">
-          <ChartBar size={18} /> {productCount} {productCount === 1 ? 'producto' : 'productos'}
-        </span>
-      </div>
-
-      {loading ? (
-        <p className="registration-loading">Cargando totales…</p>
-      ) : error ? (
-        <p className="registration-error">{error}</p>
-      ) : (
-        <>
-        <div className="dashboard-tiles">
-          <article className="dashboard-tile purchase-tile">
-            <div className="dashboard-tile-icon">
-              <Banknote size={34} />
-            </div>
-            <div className="dashboard-tile-content">
-              <strong>Total compra productos</strong>
-              <p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p>
-            </div>
-          </article>
-
-          <article className="dashboard-tile sale-tile">
-            <div className="dashboard-tile-icon">
-              <Repeat size={34} />
-            </div>
-            <div className="dashboard-tile-content">
-              <strong>Total venta producto</strong>
-              <p className="dashboard-tile-total">{formatPrice(totalSale)}</p>
-            </div>
-          </article>
-        </div>
-        <section className="sales-history-card light-card">
-          <div className="sales-history-heading"><div><span className="dashboard-eyebrow">REGISTRO DE CAJA</span><h2><ReceiptText size={19} /> Ventas recientes</h2></div><span>{sales.length} {sales.length === 1 ? 'venta' : 'ventas'}</span></div>
-          {sales.length === 0 ? <p className="pos-empty-note">Las ventas que registres en Caja POS aparecerán aquí.</p> : <ul className="sales-history-list">{sales.slice(0, 20).map((sale) => <li key={sale.id}><div><strong>{sale.buyer}</strong><span>{(sale.products || []).map((item) => `${item.quantity}× ${item.name} (${formatPrice(item.price)})`).join(' · ')}</span><small>{sale.paymentMethod}</small></div><b>{formatPrice(sale.total)}</b></li>)}</ul>}
-        </section>
-        </>
-      )}
-    </section>
-  )
+  return <section className="dashboard-module"><div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span><h1>Dashboard</h1><p>Totales de inventario y registros de caja actualizados automáticamente.</p></div><span className="dashboard-total"><ChartBar size={18}/> {productCount} {productCount === 1 ? 'producto' : 'productos'}</span></div>
+    {loading ? <p className="registration-loading">Cargando totales...</p> : error ? <p className="registration-error">{error}</p> : <><div className="dashboard-tiles"><article className="dashboard-tile purchase-tile"><div className="dashboard-tile-icon"><Banknote size={34}/></div><div className="dashboard-tile-content"><strong>Total compra productos</strong><p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p></div></article><article className="dashboard-tile sale-tile"><div className="dashboard-tile-icon"><Repeat size={34}/></div><div className="dashboard-tile-content"><strong>Total venta producto</strong><p className="dashboard-tile-total">{formatPrice(totalSale)}</p></div></article><article className="dashboard-tile progress-tile"><div className="dashboard-tile-icon"><ReceiptText size={34}/></div><div className="dashboard-tile-content"><strong>Ventas en progreso</strong><p className="dashboard-tile-total">{formatPrice(progressTotal)}</p></div></article></div>
+      <section className="sales-history-card light-card"><div className="sales-history-heading"><div><span className="dashboard-eyebrow">REGISTRO DE CAJA</span><h2><ReceiptText size={19}/> Ventas recientes</h2></div><span>{sales.length} {sales.length === 1 ? 'venta' : 'ventas'}</span></div>{sales.length === 0 ? <p className="pos-empty-note">Sin ventas registradas.</p> : <ul className="sales-history-list">{sales.map((sale) => <li key={sale.id}><div className="sales-row-main">{editingId === sale.id ? <><input className="modal-input sales-edit-input" aria-label="Nombre de la venta" value={editBuyer} onChange={(e) => setEditBuyer(e.target.value)}/><input className="modal-input sales-edit-input" type="number" min="0" step="0.01" aria-label="Monto de la venta" value={editTotal} onChange={(e) => setEditTotal(e.target.value)}/></> : <><strong>{sale.buyer}</strong><span>{(sale.products || []).map((item) => `${item.quantity}x ${item.name} (${formatPrice(item.price)})`).join(' · ')}</span><small>{sale.paymentMethod}</small></>}</div><div className="sales-row-actions">{editingId === sale.id ? <><b>{formatPrice(editTotal)}</b><button type="button" className="sales-action-btn" aria-label="Guardar cambios" onClick={() => saveEdit(sale)}><Check size={16}/></button><button type="button" className="sales-action-btn" aria-label="Cancelar edición" onClick={() => setEditingId(null)}><X size={16}/></button></> : <><b>{formatPrice(sale.total)}</b><button type="button" className="sales-action-btn" aria-label={`Editar ${sale.buyer}`} onClick={() => startEdit(sale)}><Pencil size={15}/></button><button type="button" className="sales-action-btn delete" aria-label={`Eliminar ${sale.buyer}`} onClick={() => removeSale(sale)}><Trash2 size={15}/></button></>}</div></li>)}</ul>}</section>
+    </>}
+  </section>
 }

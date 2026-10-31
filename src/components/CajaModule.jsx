@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { Banknote, CreditCard, PackagePlus, Plus, ShoppingBag, X } from 'lucide-react'
 import { db } from '../firebase'
 
@@ -37,11 +37,10 @@ export default function CajaModule({ onToast }) {
     if (!selected.length) return setError('Selecciona al menos un producto.')
     setSaving(true)
     try {
-      const { addDoc } = await import('firebase/firestore')
       await addDoc(collection(db, 'posPacks'), { name: packName.trim(), products: selected, total, createdAt: serverTimestamp() })
       setPackName(''); setSelected([]); setCreatorOpen(false); setError('')
       onToast?.({ type: 'success', title: 'Pack creado', message: `${money(total)} agregado al inventario disponible.` })
-    } catch { setError('No se pudo guardar el pack.') } finally { setSaving(false) }
+    } catch (saveError) { console.error('No se pudo guardar el pack:', saveError); setError(saveError.code === 'permission-denied' ? 'Firebase bloqueó el guardado del pack. Publica las reglas actualizadas de Firestore.' : `No se pudo guardar el pack: ${saveError.message || 'error desconocido'}`) } finally { setSaving(false) }
   }
   const completeSale = async (method) => {
     setSaving(true)
@@ -51,7 +50,7 @@ export default function CajaModule({ onToast }) {
         const snapshots = await Promise.all(refs.map((ref) => transaction.get(ref)))
         snapshots.forEach((snapshot, index) => { if (!snapshot.exists() || Number(snapshot.data().quantity) < 1) throw new Error(`Stock insuficiente para ${paymentPack.products[index].name}.`) })
         snapshots.forEach((snapshot) => transaction.update(snapshot.ref, { quantity: Number(snapshot.data().quantity) - 1, updatedAt: serverTimestamp() }))
-        transaction.set(doc(collection(db, 'posSales')), { buyer: paymentPack.name, paymentMethod: method, packId: paymentPack.id, products: paymentPack.products.map((item) => ({ name: item.name, price: Number(item.price), quantity: 1 })), total: Number(paymentPack.total), createdAt: serverTimestamp() })
+        transaction.set(doc(collection(db, 'posSales')), { buyer: paymentPack.name, paymentMethod: method, packId: paymentPack.id, products: paymentPack.products.map((item) => ({ id: item.id, name: item.name, price: Number(item.price), quantity: 1 })), total: Number(paymentPack.total), createdAt: serverTimestamp() })
       })
       onToast?.({ type: 'success', title: 'Venta registrada', message: `${paymentPack.name} · ${money(paymentPack.total)} · ${method}` })
       setPaymentPack(null)

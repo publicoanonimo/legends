@@ -3,8 +3,9 @@ import {
   addDoc, collection, doc, getDoc, getDocs, onSnapshot, orderBy, query,
   runTransaction, serverTimestamp, updateDoc,
 } from 'firebase/firestore'
-import { Banknote, ChartBar, CircleDollarSign, QrCode, ReceiptText, Pencil, Trash2, Check, X, Plus } from 'lucide-react'
+import { Banknote, ChartBar, CircleDollarSign, QrCode, ReceiptText, Pencil, Trash2, Check, X, Plus, Download } from 'lucide-react'
 import { db } from '../firebase'
+import { downloadSalesReportPdf } from '../utils/salesReportPdf'
 
 const DELETE_PASSWORD = 'admin001'
 
@@ -32,19 +33,25 @@ export default function ResumenModule() {
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [purchaseError, setPurchaseError] = useState('')
   const [savingPurchase, setSavingPurchase] = useState(false)
+  const [inventoryProducts, setInventoryProducts] = useState([])
+  const [purchaseEntries, setPurchaseEntries] = useState([])
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(collection(db, 'posProducts'), orderBy('createdAt', 'desc')), (snapshot) => {
       let purchase = 0; let sale = 0; let count = 0
+      const regularProducts = []
+      const extraPurchases = []
       snapshot.forEach((item) => {
         const data = item.data()
         if (data.recordType === 'pack') return
-        if (data.recordType === 'purchase') { purchase += Number(data.amount) || 0; return }
+        if (data.recordType === 'purchase') { purchase += Number(data.amount) || 0; extraPurchases.push({ id: item.id, ...data }); return }
         count += 1
+        regularProducts.push({ id: item.id, ...data })
         const units = Math.max(0, Number(data.quantity) || 0)
         purchase += (Number(data.purchasePrice) || 0) * units
         sale += (Number(data.salePrice ?? data.price) || 0) * units
       })
+      setInventoryProducts(regularProducts); setPurchaseEntries(extraPurchases)
       setTotalPurchase(purchase); setTotalSale(sale); setProductCount(count); setLoading(false); setError('')
     }, () => { setLoading(false); setError('No se pudieron cargar los productos. Revisa las reglas de Firestore.') })
     return unsubscribe
@@ -123,8 +130,35 @@ export default function ResumenModule() {
     finally { setSavingPurchase(false) }
   }
 
+  const downloadReport = () => {
+    const reportMoney = (value) => new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(value) || 0)
+    const dateLabel = (value) => value?.toDate ? new Intl.DateTimeFormat('es-BO', { dateStyle: 'short', timeStyle: 'short' }).format(value.toDate()) : 'Fecha no disponible'
+    const lines = [
+      'REPORTE GENERAL DE CAJA E INVENTARIO',
+      `Generado: ${new Intl.DateTimeFormat('es-BO', { dateStyle: 'full', timeStyle: 'short' }).format(new Date())}`,
+      '', 'RESUMEN DE CAJA',
+      `Ventas por QR: ${reportMoney(qrTotal)}`,
+      `Ventas por efectivo: ${reportMoney(cashTotal)}`,
+      `Total de ventas: ${reportMoney(allCashSales)}`,
+      '', 'INVERSION E INVENTARIO',
+      `Inversion total registrada: ${reportMoney(totalPurchase)}`,
+      `Valor de venta del stock actual: ${reportMoney(totalSale)}`,
+      `Productos en inventario: ${productCount}`,
+      '', 'DETALLE DE PRODUCTOS EN INVENTARIO',
+      ...(inventoryProducts.length ? inventoryProducts.map((product) => `${product.name} | Stock: ${Number(product.quantity) || 0} | Compra/u: ${reportMoney(product.purchasePrice)} | Venta/u: ${reportMoney(product.salePrice ?? product.price)} | Inversion en stock: ${reportMoney((Number(product.purchasePrice) || 0) * (Number(product.quantity) || 0))}`) : ['Sin productos en inventario.']),
+      '', 'COMPRAS ADICIONALES REGISTRADAS',
+      ...(purchaseEntries.length ? purchaseEntries.map((entry) => `${dateLabel(entry.createdAt)} | ${entry.label || 'Compra adicional'} | ${reportMoney(entry.amount)}`) : ['Sin compras adicionales registradas.']),
+      '', 'DETALLE DE VENTAS',
+      ...(sales.length ? sales.flatMap((sale) => [
+        `${dateLabel(sale.createdAt)} | ${sale.buyer || 'Venta'} | Pago: ${sale.paymentMethod || 'No indicado'} | Total: ${reportMoney(sale.total)}`,
+        `Productos: ${(sale.products || []).map((item) => `${item.quantity}x ${item.name} (${reportMoney(item.price)} c/u)`).join(', ') || 'Detalle no disponible'}`,
+      ]) : ['Sin ventas registradas.']),
+    ]
+    downloadSalesReportPdf(lines)
+  }
+
   return <section className="dashboard-module">
-    <div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span><h1>Dashboard</h1><p>Ventas de caja e inventario actualizados automáticamente.</p></div><span className="dashboard-total"><ChartBar size={18}/> {productCount} {productCount === 1 ? 'producto' : 'productos'}</span></div>
+    <div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span><h1>Dashboard</h1><p>Ventas de caja e inventario actualizados automáticamente.</p></div><div className="dashboard-heading-actions"><span className="dashboard-total"><ChartBar size={18}/> {productCount} {productCount === 1 ? 'producto' : 'productos'}</span><button type="button" className="report-download-btn" disabled={loading || Boolean(error)} onClick={downloadReport}><Download size={16}/> Descargar PDF</button></div></div>
     {loading ? <p className="registration-loading">Cargando totales...</p> : error ? <p className="registration-error">{error}</p> : <>
       <section className="dashboard-summary-section cash-summary-section"><div className="summary-section-heading"><h2>Ventas de caja</h2></div><div className="dashboard-tiles cash-summary-tiles">
         <article className="dashboard-tile cash-total-tile"><div className="dashboard-tile-icon"><QrCode size={32}/></div><div className="dashboard-tile-content"><strong>Ventas por QR</strong><p className="dashboard-tile-total">{formatPrice(qrTotal)}</p></div></article>
@@ -134,10 +168,10 @@ export default function ResumenModule() {
 
       <section className="sales-history-card light-card"><div className="sales-history-heading"><div><span className="dashboard-eyebrow">REGISTRO DE CAJA</span><h2><ReceiptText size={19}/> Ventas recientes</h2></div><span>{sales.length} {sales.length === 1 ? 'venta' : 'ventas'}</span></div>{actionError && !pendingDelete && <p className="login-error" role="alert">{actionError}</p>}{sales.length === 0 ? <p className="pos-empty-note">Sin ventas registradas.</p> : <ul className="sales-history-list">{sales.map((sale) => <li key={sale.id}><div className="sales-row-main">{editingId === sale.id ? <><input className="modal-input sales-edit-input" aria-label="Nombre de la venta" value={editBuyer} onChange={(e) => setEditBuyer(e.target.value)}/><input className="modal-input sales-edit-input" type="number" min="0" step="0.01" aria-label="Monto de la venta" value={editTotal} onChange={(e) => setEditTotal(e.target.value)}/></> : <><strong>{sale.buyer}</strong><span>{(sale.products || []).map((item) => `${item.quantity}x ${item.name} (${formatPrice(item.price)})`).join(' · ')}</span><small>{sale.paymentMethod}</small></>}</div><div className="sales-row-actions">{editingId === sale.id ? <><b>{formatPrice(editTotal)}</b><button type="button" className="sales-action-btn" aria-label="Guardar cambios" onClick={() => saveEdit(sale)}><Check size={16}/></button><button type="button" className="sales-action-btn" aria-label="Cancelar edición" onClick={() => setEditingId(null)}><X size={16}/></button></> : <><b>{formatPrice(sale.total)}</b><button type="button" className="sales-action-btn" aria-label={`Editar ${sale.buyer}`} onClick={() => startEdit(sale)}><Pencil size={15}/></button><button type="button" className="sales-action-btn delete" aria-label={`Eliminar ${sale.buyer}`} onClick={() => { setPendingDelete(sale); setDeletePassword(''); setActionError('') }}><Trash2 size={15}/></button></>}</div></li>)}</ul>}</section>
 
-      <section className="dashboard-summary-section inventory-summary-section"><div className="summary-section-heading"><h2>Resumen de productos</h2></div><div className="dashboard-tiles inventory-summary-tiles">
-        <article className="dashboard-tile purchase-tile"><div className="dashboard-tile-icon"><Banknote size={34}/></div><div className="dashboard-tile-content"><strong>Total compra producto</strong><p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p><button type="button" className="add-purchase-btn" onClick={() => { setPurchaseModalOpen(true); setPurchaseError('') }}><Plus size={16}/> Añadir compra</button></div></article>
+      <section className="dashboard-summary-section inventory-summary-section"><div className="summary-section-heading purchase-section-heading"><h2>Resumen de productos</h2><button type="button" className="add-purchase-btn" onClick={() => { setPurchaseModalOpen(true); setPurchaseError('') }}><Plus size={16}/> Añadir compra</button></div><div className="dashboard-tiles inventory-summary-tiles">
+        <article className="dashboard-tile purchase-tile"><div className="dashboard-tile-icon"><Banknote size={34}/></div><div className="dashboard-tile-content"><strong>Total compra producto</strong><p className="dashboard-tile-total">{formatPrice(totalPurchase)}</p></div></article>
         <article className="dashboard-tile sale-tile"><div className="dashboard-tile-icon"><ReceiptText size={34}/></div><div className="dashboard-tile-content"><strong>Total venta producto</strong><p className="dashboard-tile-total">{formatPrice(totalSale)}</p></div></article>
-      </div></section>
+      </div><section className="purchase-register-list"><div className="sales-history-heading"><div><h3>Compras adicionales</h3></div><span>{purchaseEntries.length} {purchaseEntries.length === 1 ? 'compra' : 'compras'}</span></div>{purchaseEntries.length ? <ul>{purchaseEntries.map((entry) => <li key={entry.id}><div><strong>{entry.label || 'Compra adicional'}</strong><small>{entry.createdAt?.toDate ? new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short' }).format(entry.createdAt.toDate()) : 'Registro reciente'}</small></div><b>{formatPrice(entry.amount)}</b></li>)}</ul> : <p className="pos-empty-note">Las compras adicionales que registres aparecerán aquí.</p>}</section></section>
     </>}
 
     {pendingDelete && <div className="modal-backdrop" role="presentation" onClick={() => !deleting && setPendingDelete(null)}><form className="booking-modal-card delete-modal-card" role="dialog" aria-modal="true" aria-labelledby="delete-sale-title" onSubmit={(event) => { event.preventDefault(); removeSale() }} onClick={(event) => event.stopPropagation()}><div className="modal-header"><div><span className="modal-kicker">CONFIRMAR ELIMINACIÓN</span><h2 id="delete-sale-title" className="modal-title">Borrar venta</h2></div><button type="button" className="modal-close-btn" onClick={() => setPendingDelete(null)} aria-label="Cerrar"><X size={20}/></button></div><div className="modal-body"><p>Se eliminará <strong>{pendingDelete.buyer}</strong> y se devolverán sus productos al inventario.</p><label className="field-label" htmlFor="delete-sale-password">Contraseña</label><input id="delete-sale-password" className="modal-input" type="password" autoComplete="off" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} required />{actionError && <p className="login-error" role="alert">{actionError}</p>}</div><div className="modal-footer"><button className="submit-booking-btn delete-confirm-btn" type="submit" disabled={deleting}><Trash2 size={16}/><span>{deleting ? 'Eliminando...' : 'Confirmar eliminación'}</span></button></div></form></div>}

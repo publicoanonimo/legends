@@ -5500,7 +5500,20 @@ code {
 .inventory-summary-tiles .sale-tile .dashboard-tile-total { color: #35d07f; }
 .add-purchase-btn { width: fit-content; display: inline-flex; align-items: center; gap: 7px; margin-top: 7px; padding: 8px 11px; border: 1px solid rgba(255, 82, 82, .45); border-radius: 8px; color: #ff7676; font-size: 12px; font-weight: 750; }
 .add-purchase-btn:hover { background: rgba(255, 82, 82, .1); }
+.purchase-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.purchase-section-heading .add-purchase-btn { margin: 0 0 16px; }
 .purchase-amount-label { display: block; margin-top: 15px; }
+.dashboard-heading-actions { display: flex; align-items: center; gap: 12px; }
+.report-download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 13px; border: 1px solid var(--border-crimson); border-radius: 9px; color: var(--text-pure); font-size: 12px; font-weight: 750; white-space: nowrap; }
+.report-download-btn:hover { background: rgba(220, 38, 38, .13); }
+.purchase-register-list { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border-subtle); }
+.purchase-register-list h3 { margin: 0; color: var(--text-pure); font-size: 15px; }
+.purchase-register-list ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.purchase-register-list li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border-subtle); }
+.purchase-register-list li > div { display: grid; gap: 4px; }
+.purchase-register-list li strong { color: var(--text-pure); }
+.purchase-register-list li small { color: var(--text-muted); }
+.purchase-register-list li b { color: #ff5252; white-space: nowrap; }
 .pos-pack-card { min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-subtle); border-radius: 11px; background: var(--bg-surface-2); overflow: hidden; }
 .pos-pack-main { flex: 1; width: 100%; min-height: 115px; padding: 15px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 7px; text-align: left; }
 .pos-pack-main strong { color: var(--text-pure); font-size: 15px; overflow-wrap: anywhere; }
@@ -5526,6 +5539,12 @@ code {
 .sales-action-btn.delete:hover { color: var(--crimson-glow); }
 .sales-edit-input { max-width: 260px; padding: 7px 9px; }
 @media (max-width: 640px) { .sales-row-actions { width: 100%; } }
+@media (max-width: 640px) {
+  .dashboard-heading-actions { align-items: flex-end; flex-direction: column; gap: 8px; }
+  .dashboard-summary-section { padding: 15px; }
+  .purchase-section-heading { align-items: flex-start; flex-direction: column; }
+  .purchase-section-heading .add-purchase-btn { margin: 0 0 15px; }
+}
 
 @media (max-width: 640px) {
   .dashboard-tile {

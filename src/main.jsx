@@ -3,12 +3,13 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './styles.css'
 
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.error('No se pudo registrar el acceso instalable:', error)
-    })
-  })
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => Promise.all(
+    registrations.filter((registration) => [registration.active, registration.waiting, registration.installing]
+      .some((worker) => worker?.scriptURL.endsWith('/sw.js')))
+      .map((registration) => registration.unregister()),
+  )).catch(() => {})
+  if ('caches' in window) window.caches.delete('the-legends-shell-v1').catch(() => {})
 }
 
 createRoot(document.getElementById('root')).render(

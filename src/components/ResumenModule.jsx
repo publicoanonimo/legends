@@ -14,7 +14,7 @@ function formatPrice(value) {
   return new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number.isFinite(price) ? price : 0)
 }
 
-export default function ResumenModule() {
+export default function ResumenModule({ canManage = false }) {
   const [totalPurchase, setTotalPurchase] = useState(0)
   const [totalSale, setTotalSale] = useState(0)
   const [productCount, setProductCount] = useState(0)
@@ -188,7 +188,7 @@ export default function ResumenModule() {
     downloadSalesReportPdf(report)
   }
 
-  return <section className="dashboard-module">
+  return <section className={`dashboard-module ${canManage ? 'can-manage' : 'read-only'}`}>
     <div className="dashboard-page-heading"><div><span className="dashboard-eyebrow">RESUMEN DE INVENTARIO</span><h1>Dashboard</h1><p>Ventas de caja e inventario actualizados automáticamente.</p></div><div className="dashboard-heading-actions"><span className="dashboard-total"><ChartBar size={18}/> {productCount} {productCount === 1 ? 'producto' : 'productos'}</span><button type="button" className="report-download-btn" disabled={loading || Boolean(error)} onClick={downloadReport}><Download size={16}/> Descargar PDF</button></div></div>
     {loading ? <p className="registration-loading">Cargando totales...</p> : error ? <p className="registration-error">{error}</p> : <>
       <section className="dashboard-summary-section cash-summary-section"><div className="summary-section-heading"><h2>Ventas de caja</h2></div><div className="dashboard-tiles cash-summary-tiles">

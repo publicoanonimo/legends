@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import {
   Home, LayoutDashboard, ClipboardList, Banknote, Package, Menu, X, Ticket, Calendar,
-  ChevronRight, UserRound, LogOut, Download, UsersRound
+  ChevronRight, UserRound, LogOut, UsersRound
 } from 'lucide-react'
 
 // Components
@@ -55,8 +55,6 @@ export default function App() {
   const [loginOpen, setLoginOpen] = useState(false)
   // Default to open on desktop (>=1024px) and closed on mobile (<1024px)
   const [sidebarOpen, setSidebarOpen] = useState(() => Boolean(window.localStorage.getItem('legends_admin_session')) && window.innerWidth >= 1024)
-  const [installPrompt, setInstallPrompt] = useState(null)
-  const [installHelpOpen, setInstallHelpOpen] = useState(false)
 
   // Modals state
   const [bookingPackage, setBookingPackage] = useState(null)
@@ -79,20 +77,6 @@ export default function App() {
     const allowed = modulesForRole(currentUser.role)
     if (!allowed.includes(active)) setActive(allowed[0] || 'inicio')
   }, [currentUser, active])
-
-  useEffect(() => {
-    const captureInstallPrompt = (event) => {
-      event.preventDefault()
-      setInstallPrompt(event)
-    }
-    const handleInstalled = () => setInstallPrompt(null)
-    window.addEventListener('beforeinstallprompt', captureInstallPrompt)
-    window.addEventListener('appinstalled', handleInstalled)
-    return () => {
-      window.removeEventListener('beforeinstallprompt', captureInstallPrompt)
-      window.removeEventListener('appinstalled', handleInstalled)
-    }
-  }, [])
 
   const showToast = (toastData) => {
     setToast(toastData)
@@ -132,13 +116,8 @@ export default function App() {
     if (!nextUsers.some((user) => user.username === sessionUsername)) handleLogout()
   }
 
-  const handleInstallApp = async () => {
-    if (!installPrompt) { setInstallHelpOpen(true); return }
-    await installPrompt.prompt()
-    setInstallPrompt(null)
-  }
-
   const activeModule = modules.find((m) => m.id === active) || modules[0]
+  const isSuperAdmin = currentUser?.username === 'admin' && currentUser?.role === 'superadmin'
   const visibleModules = currentUser ? modules.filter((item) => modulesForRole(currentUser.role).includes(item.id)) : []
 
   return (
@@ -217,9 +196,6 @@ export default function App() {
             <>
               <span className="visitor-brand">THE LEGENDS</span>
               <div className="visitor-header-actions">
-              <button className="install-app-btn" onClick={handleInstallApp} aria-label="Añadir aplicación a pantalla principal">
-                <Download size={16} /><span>Instalar</span>
-              </button>
               <button
                 className="organizer-login-btn"
                 onClick={() => setLoginOpen(true)}
@@ -253,9 +229,6 @@ export default function App() {
           </div>
 
           <div className="topbar-right">
-            <button className="install-app-btn" onClick={handleInstallApp} aria-label="Añadir aplicación a pantalla principal">
-              <Download size={16} /><span>Instalar app</span>
-            </button>
             <div className="event-date-pill" onClick={() => setDateModalOpen(true)}>
               <Calendar size={13} className="text-crimson" />
               <span>30 OCT · SAN PEDRO</span>
@@ -300,27 +273,27 @@ export default function App() {
 
           {active === 'resumen' && (
             <Suspense fallback={<p className="registration-loading">Cargando resumen…</p>}>
-              <ResumenModule />
+              <ResumenModule canManage={isSuperAdmin} />
             </Suspense>
           )}
 
           {active === 'dashboard' && (
             <Suspense fallback={<p className="registration-loading">Cargando panel…</p>}>
-              <DashboardModule />
+              <DashboardModule canManage={isSuperAdmin} />
             </Suspense>
           )}
 
           {active === 'caja' && (
-            <Suspense fallback={<p className="registration-loading">Cargando caja…</p>}><CajaModule onToast={showToast} /></Suspense>
+            <Suspense fallback={<p className="registration-loading">Cargando caja…</p>}><CajaModule onToast={showToast} canManage={isSuperAdmin} /></Suspense>
           )}
 
           {active === 'inventario' && (
             <Suspense fallback={<p className="registration-loading">Cargando inventario…</p>}>
-              <InventarioModule onToast={showToast} />
+              <InventarioModule onToast={showToast} canManage={isSuperAdmin} />
             </Suspense>
           )}
 
-          {active === 'usuarios' && currentUser?.role === 'admin' && (
+          {active === 'usuarios' && isSuperAdmin && (
             <Suspense fallback={<p className="registration-loading">Cargando usuarios…</p>}>
               <UsuariosModule users={users} currentUser={currentUser} onSaveUsers={handleSaveUsers} />
             </Suspense>
@@ -387,7 +360,6 @@ export default function App() {
           />
         )}
       </Suspense>
-      {installHelpOpen && <div className="modal-backdrop" role="presentation" onClick={() => setInstallHelpOpen(false)}><div className="booking-modal-card install-help-card" role="dialog" aria-modal="true" aria-labelledby="install-help-title" onClick={(event) => event.stopPropagation()}><div className="modal-header"><div><span className="modal-kicker">ACCESO RÁPIDO</span><h2 id="install-help-title" className="modal-title">Añadir a pantalla principal</h2></div><button type="button" className="modal-close-btn" onClick={() => setInstallHelpOpen(false)} aria-label="Cerrar"><X size={20}/></button></div><div className="modal-body"><p>En iPhone o iPad, toca <strong>Compartir</strong> en Safari y elige <strong>Añadir a pantalla de inicio</strong>.</p><p>En Android, abre el menú del navegador y selecciona <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla principal</strong>.</p></div></div></div>}
     </div>
   )
 }

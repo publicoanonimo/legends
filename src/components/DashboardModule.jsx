@@ -18,7 +18,7 @@ function formatDate(timestamp) {
   }).format(timestamp.toDate())
 }
 
-function RegistrationList({ registrations, type, onRequestDelete }) {
+function RegistrationList({ registrations, type, onRequestDelete, canManage }) {
   const isPersonal = type === 'personal'
   const Icon = isPersonal ? UserRound : UsersRound
   const emptyMessage = isPersonal
@@ -52,7 +52,7 @@ function RegistrationList({ registrations, type, onRequestDelete }) {
                   <span>{isPersonal ? registration.phone : registration.representativePhone}</span>
                   <time>{formatDate(registration.createdAt)}</time>
                 </div>
-                <button
+                {canManage && <button
                   type="button"
                   className="registration-delete-btn"
                   onClick={() => onRequestDelete(registration, type)}
@@ -60,7 +60,7 @@ function RegistrationList({ registrations, type, onRequestDelete }) {
                 >
                   <Trash2 size={14} />
                   <span>Eliminar</span>
-                </button>
+                </button>}
               </div>
             </li>
           ))}
@@ -173,7 +173,7 @@ function DeleteRegistrationModal({ registration, type, onClose }) {
   )
 }
 
-export default function DashboardModule() {
+export default function DashboardModule({ canManage = false }) {
   const [registrations, setRegistrations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -225,11 +225,13 @@ export default function DashboardModule() {
           <RegistrationList
             registrations={personalRegistrations}
             type="personal"
+            canManage={canManage}
             onRequestDelete={(registration, type) => setPendingDelete({ registration, type })}
           />
           <RegistrationList
             registrations={groupRegistrations}
             type="group"
+            canManage={canManage}
             onRequestDelete={(registration, type) => setPendingDelete({ registration, type })}
           />
         </div>

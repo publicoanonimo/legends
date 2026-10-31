@@ -328,7 +328,7 @@ function SuperadminPasswordModal({ title, message, confirmLabel, onClose, onConf
   )
 }
 
-function ProductCard({ product, onEdit, onDelete }) {
+function ProductCard({ product, onEdit, onDelete, canManage }) {
   const quantity = getQuantity(product)
   const purchasePrice = getPurchasePrice(product)
   const salePrice = getSalePrice(product)
@@ -366,7 +366,7 @@ function ProductCard({ product, onEdit, onDelete }) {
         </div>
       </div>
 
-      <div className="inv-actions">
+      {canManage && <div className="inv-actions">
         <span className="stock-hint">Editar o eliminar con contraseña</span>
         <div className="inv-action-buttons">
           <button
@@ -388,12 +388,12 @@ function ProductCard({ product, onEdit, onDelete }) {
             <Trash2 size={15} />
           </button>
         </div>
-      </div>
+      </div>}
     </article>
   )
 }
 
-export default function InventarioModule({ onToast }) {
+export default function InventarioModule({ onToast, canManage = false }) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -473,6 +473,7 @@ export default function InventarioModule({ onToast }) {
               <ProductCard
                 key={product.id}
                 product={product}
+                canManage={canManage}
                 onEdit={(item) => setPendingAction({ type: 'edit', product: item })}
                 onDelete={(item) => setPendingAction({ type: 'delete', product: item })}
               />

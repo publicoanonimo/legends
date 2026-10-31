@@ -1,7 +1,7 @@
 const USERS_KEY = 'legends_users'
 
 const LEGACY_USERS = [
-  { username: 'admin', password: 'admin', role: 'admin' },
+  { username: 'admin', password: 'admin', role: 'superadmin' },
   { username: 'carlos', password: '60109945', role: 'admin' },
   { username: 'mica', password: '76584608', role: 'admin' },
   { username: 'george', password: '68176771', role: 'admin' },
@@ -13,7 +13,13 @@ export function readUsers() {
     const stored = window.localStorage.getItem(USERS_KEY)
     if (!stored) return LEGACY_USERS
     const parsed = JSON.parse(stored)
-    return Array.isArray(parsed) ? parsed.filter((user) => user?.username && user?.password && user?.role) : LEGACY_USERS
+    if (!Array.isArray(parsed)) return LEGACY_USERS
+    const normalized = parsed.filter((user) => user?.username && user?.password && user?.role).map((user) => ({
+      ...user,
+      role: user.username === 'admin' ? 'superadmin' : user.role === 'superadmin' ? 'admin' : user.role,
+    }))
+    window.localStorage.setItem(USERS_KEY, JSON.stringify(normalized))
+    return normalized
   } catch {
     return LEGACY_USERS
   }
@@ -24,7 +30,8 @@ export function persistUsers(users) {
 }
 
 export function modulesForRole(role) {
-  if (role === 'admin') return ['inicio', 'resumen', 'dashboard', 'caja', 'inventario', 'usuarios']
+  if (role === 'superadmin') return ['inicio', 'resumen', 'dashboard', 'caja', 'inventario', 'usuarios']
+  if (role === 'admin') return ['inicio', 'resumen', 'dashboard', 'caja', 'inventario']
   if (role === 'caja') return ['resumen', 'caja']
   if (role === 'inventario') return ['resumen', 'inventario']
   if (role === 'inscripciones') return ['dashboard']
@@ -32,7 +39,8 @@ export function modulesForRole(role) {
 }
 
 export const ROLE_OPTIONS = [
-  { id: 'admin', label: 'Administrador', description: 'Acceso a todos los módulos y usuarios.' },
+  { id: 'superadmin', label: 'Superadministrador', description: 'Control completo de módulos, usuarios y acciones.' },
+  { id: 'admin', label: 'Administrador', description: 'Acceso de lectura a los módulos de operación.' },
   { id: 'caja', label: 'Caja', description: 'Dashboard y Caja POS.' },
   { id: 'inventario', label: 'Inventario', description: 'Dashboard e Inventario.' },
   { id: 'inscripciones', label: 'Inscripciones', description: 'Lista de inscripciones.' },

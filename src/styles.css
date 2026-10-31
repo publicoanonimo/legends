@@ -5554,15 +5554,10 @@ code {
   .purchase-section-heading .add-purchase-btn { margin: 0 0 15px; }
 }
 
-.install-app-btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid var(--border-subtle); border-radius: 9px; background: rgba(255,255,255,.04); color: var(--text-pure); font-size: 12px; font-weight: 750; white-space: nowrap; }
-.install-app-btn:hover { border-color: var(--border-crimson); background: rgba(255,23,68,.1); }
-.install-help-card { max-width: 480px; }
-.install-help-card .modal-body p + p { margin-top: 14px; }
-.caja-module .pos-products-panel .inv-card::after,
 .caja-module .pos-products-panel .pos-create-card::after,
 .caja-module .pos-products-panel .pos-pack-select::after,
 .caja-module .pos-products-panel .pos-product-tool-btn::after { display: none; }
-.caja-module .pos-products-panel .pos-pack-inventory-card { border: 0 !important; box-shadow: none !important; }
+.caja-module .pos-products-panel .pos-pack-inventory-card { border: 1px solid var(--border-subtle); box-shadow: none; }
 .caja-module .pos-products-panel .pos-pack-inventory-card .pos-pack-select,
 .caja-module .pos-products-panel .pos-pack-inventory-card .pos-product-tool-btn { border: 0 !important; box-shadow: none !important; }
 .caja-module .pos-products-panel .pos-pack-inventory-card .inv-actions { border-top: 0; }
@@ -5584,17 +5579,14 @@ code {
 .users-actions { display: flex; gap: 6px; }
 .users-form-label { display: block; margin-top: 14px; }
 .users-edit-modal { max-width: 520px; }
+.read-only .sales-history-list .sales-action-btn,
+.read-only .purchase-register-list .purchase-register-row-actions .sales-action-btn { display: none; }
 
 @media (max-width: 640px) {
   .users-toolbar { align-items: stretch; flex-direction: column; }
   .users-list-card { padding: 15px; }
   .users-list li { grid-template-columns: 38px 1fr auto; gap: 9px; }
   .users-list li > p { grid-column: 2 / 4; }
-}
-
-@media (max-width: 640px) {
-  .install-app-btn { padding: 7px 9px; }
-  .install-app-btn span { font-size: 11px; }
 }
 
 @media (max-width: 640px) {
